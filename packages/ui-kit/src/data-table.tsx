@@ -2,20 +2,14 @@
 
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import type { TableRowActivateEvent, TableRowFocus } from "./table";
 import { Search, X } from "lucide-react";
+import { resolveLabels } from "./lib/labels";
 import { cn } from "./lib/utils";
 import { Input } from "./input";
 import { SortableTableHead, type DataTableSortDirection } from "./data-table-shell";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "./pagination";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table";
+import { PaginationControls } from "./pagination-controls";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, type TableDensity, type TableVariant } from "./table";
 
 export type DataTableValue = string | number | boolean | null | undefined;
 
@@ -30,12 +24,58 @@ export interface DataTableColumn<Row> {
   width?: string;
 }
 
+/** Interface text of the search and pagination chrome. */
+export interface DataTableLabels {
+  /** Clear-search button accessible name. */
+  clearSearch: string;
+  /** Visible count of the rows that match the search. */
+  resultCount: (count: number) => string;
+  /** Accessible name of the pagination landmark. */
+  navigation: string;
+  /** Accessible name of a page button. */
+  goToPage: (page: number) => string;
+  /** Visible text of the previous/next buttons. */
+  previous: string;
+  next: string;
+  /** Accessible name of the previous/next buttons. */
+  previousPage: string;
+  nextPage: string;
+  /** Text alternative of the ellipsis between page buttons. */
+  morePages: string;
+}
+export const defaultDataTableLabels: DataTableLabels = {
+  clearSearch: "Clear search",
+  resultCount: (count) => `${count} results`,
+  navigation: "Pagination",
+  goToPage: (page) => `Go to page ${page}`,
+  previous: "Previous",
+  next: "Next",
+  previousPage: "Go to previous page",
+  nextPage: "Go to next page",
+  morePages: "More pages",
+};
+
 export interface DataTableProps<Row> {
   loading?: boolean;
   loadingLabel?: string;
   columns: DataTableColumn<Row>[];
   rows: Row[];
   rowKey: (row: Row) => string;
+  /**
+   * Makes the body rows interactive: each one is a tab stop, and this runs with the row on a
+   * click and on Enter or Space, but not from a control inside a cell. See `TableRow`.
+   */
+  onRowActivate?: (row: Row, event: TableRowActivateEvent) => void;
+  /**
+   * The `rowKey` of the selected row. Every body row then states `aria-selected`; pass `null`
+   * while the rows can be selected and none is.
+   */
+  selectedRowKey?: string | null;
+  /**
+   * `"roving"` gives the rows that `onRowActivate` makes interactive one tab stop between them,
+   * with the arrow keys moving focus from row to row. Defaults to `"each"`. See `Table`.
+   */
+  rowFocus?: TableRowFocus;
   ariaLabel?: string;
   searchPlaceholder?: string;
   emptyMessage?: ReactNode;
@@ -45,6 +85,12 @@ export interface DataTableProps<Row> {
   className?: string;
   /** Caps the table height so the rows scroll under a pinned header. See `Table`. */
   maxHeight?: string | number;
+  /** Localized interface text; missing or `undefined` keys fall back to defaultDataTableLabels. */
+  labels?: Partial<DataTableLabels>;
+  /** Row height, cell padding and text size of the table. See `Table`. */
+  density?: TableDensity;
+  /** `"plain"` drops the frame around the toolbar, table and pagination, for a host that draws it. */
+  variant?: TableVariant;
 }
 
 function compare(a: DataTableValue, b: DataTableValue) {
@@ -55,20 +101,15 @@ function compare(a: DataTableValue, b: DataTableValue) {
   return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: "base" });
 }
 
-/** Keep navigation bounded even on narrow screens; arrows reach adjacent pages. */
-function paginationPages(page: number, count: number): Array<number | "before" | "after"> {
-  if (count <= 5) return Array.from({ length: count }, (_, index) => index + 1);
-  if (page <= 2) return [1, 2, 3, "after", count];
-  if (page >= count - 1) return [1, "before", count - 2, count - 1, count];
-  return [1, "before", page, "after", count];
-}
-
 export function DataTable<Row>({
   loading,
   loadingLabel,
   columns,
   rows,
   rowKey,
+  onRowActivate,
+  selectedRowKey,
+  rowFocus,
   ariaLabel = "Data table",
   searchPlaceholder = "Search rows",
   emptyMessage = "No matching results.",
@@ -77,7 +118,11 @@ export function DataTable<Row>({
   note,
   className,
   maxHeight,
+  labels: labelOverrides,
+  density,
+  variant,
 }: DataTableProps<Row>) {
+  const labels = resolveLabels(defaultDataTableLabels, labelOverrides);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState(initialSort);
@@ -105,7 +150,7 @@ export function DataTable<Row>({
   }
 
   return (
-    <div className={cn("ci-data-table", className)}>
+    <div data-variant={variant === "plain" ? variant : undefined} className={cn("ci-data-table", className)}>
       <div className="ci-data-table__frame">
         <div className="ci-data-table__toolbar">
           <div className="ci-data-table__search">
@@ -116,11 +161,11 @@ export function DataTable<Row>({
               placeholder={searchPlaceholder}
               aria-label={searchPlaceholder}
             />
-            {query ? <button type="button" onClick={() => setQuery("")} aria-label="Clear search"><X /></button> : null}
+            {query ? <button type="button" onClick={() => setQuery("")} aria-label={labels.clearSearch}><X /></button> : null}
           </div>
-          <span className="ci-data-table__count" aria-live="polite">{filtered.length} results</span>
+          <span className="ci-data-table__count" aria-live="polite">{labels.resultCount(filtered.length)}</span>
         </div>
-        <Table aria-label={ariaLabel} loading={loading} loadingLabel={loadingLabel} maxHeight={maxHeight}>
+        <Table aria-label={ariaLabel} loading={loading} loadingLabel={loadingLabel} maxHeight={maxHeight} density={density} rowFocus={rowFocus}>
           <TableHeader>
             <TableRow>
               {columns.map((column) => {
@@ -151,7 +196,11 @@ export function DataTable<Row>({
           </TableHeader>
           <TableBody>
             {visible.length ? visible.map((row) => (
-              <TableRow key={rowKey(row)}>
+              <TableRow
+                key={rowKey(row)}
+                onActivate={onRowActivate ? (event) => onRowActivate(row, event) : undefined}
+                selected={selectedRowKey === undefined ? undefined : rowKey(row) === selectedRowKey}
+              >
                 {columns.map((column) => (
                   <TableCell
                     key={column.id}
@@ -168,17 +217,13 @@ export function DataTable<Row>({
         </Table>
         {pageCount > 1 ? (
           <div className="ci-data-table__pagination" inert={loading || undefined} aria-hidden={loading || undefined}>
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem><PaginationPrevious href="#" disabled={loading || activePage === 1} onClick={(event) => { event.preventDefault(); setPage(Math.max(1, activePage - 1)); }} /></PaginationItem>
-                {paginationPages(activePage, pageCount).map((number) => (
-                  <PaginationItem key={number}>{typeof number === "number"
-                    ? <PaginationLink href="#" label={`Go to page ${number}`} disabled={loading} isActive={number === activePage} onClick={(event) => { event.preventDefault(); setPage(number); }}>{number}</PaginationLink>
-                    : <PaginationEllipsis />}</PaginationItem>
-                ))}
-                <PaginationItem><PaginationNext href="#" disabled={loading || activePage === pageCount} onClick={(event) => { event.preventDefault(); setPage(Math.min(pageCount, activePage + 1)); }} /></PaginationItem>
-              </PaginationContent>
-            </Pagination>
+            <PaginationControls
+              page={activePage}
+              pageCount={pageCount}
+              onPageChange={setPage}
+              disabled={loading}
+              labels={{ navigation: labels.navigation, previous: labels.previous, next: labels.next, previousPage: labels.previousPage, nextPage: labels.nextPage, goToPage: labels.goToPage, morePages: labels.morePages }}
+            />
           </div>
         ) : null}
       </div>

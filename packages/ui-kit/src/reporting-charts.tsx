@@ -42,8 +42,11 @@ export interface StackedBarChartProps extends Omit<ComponentProps<"figure">, "ch
   totalLabel?: string;
   unavailableLabel?: string;
   emptyLabel?: string;
+  /** Accessible name of the keyboard point group, from `ariaLabel`. Defaults to "… data points". */
+  dataPointsLabel?: (ariaLabel: string) => string;
 }
 
+const defaultDataPointsLabel = (ariaLabel: string) => `${ariaLabel} data points`;
 const formatNumber = (value: number) => new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(value);
 const measured = (value: number | null | undefined): value is number => typeof value === "number" && Number.isFinite(value);
 const palette = ["var(--ci-chart-1)", "var(--ci-chart-2)", "var(--ci-chart-3)", "var(--ci-chart-4)", "var(--ci-chart-5)"];
@@ -53,6 +56,7 @@ const tooltipStyle = chartTheme.tooltip.contentStyle;
 interface ChartPointZonesProps {
   offset?: { top: number; left: number; width: number; height: number };
   points: readonly StackedBarDatum[];
+  /** Already resolved name of the point group. */
   ariaLabel: string;
   rovingId?: string | null;
   selectedId?: string | null;
@@ -68,7 +72,7 @@ interface ChartPointZonesProps {
 function ChartPointZones({ offset, points, ariaLabel, rovingId, selectedId, keyboardIndex, tooltipId, zones, selectable, describe, onPointSelect, onFocused, onTooltip }: ChartPointZonesProps) {
   if (!offset) return null;
   const slot = offset.width / points.length;
-  return <g role="group" aria-label={`${ariaLabel} data points`}>{points.map((datum, index) => <rect key={datum.id} ref={node => { zones.current[index] = node; }}
+  return <g role="group" aria-label={ariaLabel}>{points.map((datum, index) => <rect key={datum.id} ref={node => { zones.current[index] = node; }}
     className="ci-stacked-chart__zone" data-selected={selectedId === datum.id || undefined}
     x={offset.left + index * slot} y={offset.top} width={slot} height={offset.height}
     role={selectable ? "button" : "img"} tabIndex={rovingId === datum.id ? 0 : -1}
@@ -88,7 +92,7 @@ function ChartPointZones({ offset, points, ariaLabel, rovingId, selectedId, keyb
 export function StackedBarChart({
   ariaLabel, data, series, onPointSelect, selectedId, valueFormatter = formatNumber,
   height = 215, showLegend = true, showGrid = true, yTickCount = 5, allowDecimals = true,
-  totalLabel = "Total", unavailableLabel = "Unavailable", emptyLabel,
+  totalLabel = "Total", unavailableLabel = "Unavailable", emptyLabel, dataPointsLabel = defaultDataPointsLabel,
   className, ...props
 }: StackedBarChartProps) {
   const zones = useRef<(SVGRectElement | null)[]>([]);
@@ -116,7 +120,7 @@ export function StackedBarChart({
               content={properties => <DefaultTooltipContent {...properties} payload={properties.payload?.map(entry => ({ ...entry, value: entry.value ?? unavailableLabel }))} formatter={(value, name) => [typeof value === "number" ? valueFormatter(value) : value, name]} />}
               contentStyle={tooltipStyle} />
             {series.map((item, index) => <Bar key={item.key} dataKey={datum => datum.values[item.key]} name={item.label} stackId="usage" fill={seriesColor(item, index)} maxBarSize={32} isAnimationActive={false} />)}
-            <Customized component={<ChartPointZones points={data} ariaLabel={ariaLabel} rovingId={rovingId} selectedId={selectedId} keyboardIndex={keyboardTooltip?.index} tooltipId={tooltipId} zones={zones} selectable={!!onPointSelect} describe={describe}
+            <Customized component={<ChartPointZones points={data} ariaLabel={dataPointsLabel(ariaLabel)} rovingId={rovingId} selectedId={selectedId} keyboardIndex={keyboardTooltip?.index} tooltipId={tooltipId} zones={zones} selectable={!!onPointSelect} describe={describe}
               onPointSelect={onPointSelect} onFocused={id => setFocusedId(id)} onTooltip={setKeyboardTooltip} />} />
           </BarChart>
         </ResponsiveContainer>

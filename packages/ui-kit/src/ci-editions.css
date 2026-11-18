@@ -135,6 +135,7 @@
   --ci-radius-2xl: 1.5rem;
   --ci-radius-control: var(--ci-radius-md);
   --ci-radius-surface: var(--ci-radius-lg);
+  --ci-radius-surface-nested: var(--ci-radius-md);
   --ci-radius-pill: var(--ci-radius-full);
   --ci-shadow-xs: none;
   --ci-shadow-sm: none;
@@ -381,6 +382,7 @@
   --ci-radius-2xl: 8px;
   --ci-radius-control: 2px;
   --ci-radius-surface: 2px;
+  --ci-radius-surface-nested: 2px;
   --ci-radius-pill: 2px;
   --ci-button-primary-fg: #221b14;
   --ci-button-primary-hover: #edba94;

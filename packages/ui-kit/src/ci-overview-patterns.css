@@ -113,3 +113,8 @@
   .ci-overview-panels[data-layout="single"][data-client-layout="compact"] .ci-client-quick-start__connection { border-top: 0; padding-top: 0; }
   .ci-overview-panels[data-layout="single"][data-client-layout="compact"] .ci-overview-panels__actions { grid-column: 1; grid-row: 3; padding-top: 0; border-right: 1px solid var(--ci-color-border-subtle); }
 }
+
+/* Compact links need enough space for a readable name and description. */
+@container ci-client-quick-start (max-width: 22rem) {
+  .ci-client-quick-start__integrations[data-layout="compact"] { grid-template-columns: minmax(0, 1fr); }
+}

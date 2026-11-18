@@ -159,6 +159,56 @@
     cursor: help;
   }
 
+  /* A Button with `tooltip` stays hoverable and focusable while inactive (aria-disabled, not
+     disabled), so the tooltip can still be read. It keeps its resting look under the pointer:
+     the shared `.ci-button:hover` paints every variant, so each hover below restates that
+     variant's resting colours, and there is no press nudge. */
+  .ci-button[data-soft-disabled="true"] {
+    pointer-events: auto;
+    cursor: default;
+  }
+
+  .ci-button[data-soft-disabled="true"]:active {
+    transform: none;
+  }
+
+  .ci-button--default[data-soft-disabled="true"]:hover {
+    color: var(--ci-button-primary-fg);
+    background: var(--ci-button-primary-bg);
+  }
+
+  .ci-button--secondary[data-soft-disabled="true"]:hover {
+    color: var(--ci-color-foreground);
+    background: var(--ci-color-surface);
+  }
+
+  .ci-button--ghost[data-soft-disabled="true"]:hover,
+  .ci-button--outline[data-soft-disabled="true"]:hover,
+  .ci-button--link[data-soft-disabled="true"]:hover {
+    color: var(--ci-color-foreground);
+    background: transparent;
+  }
+
+  .ci-button--destructive[data-soft-disabled="true"]:hover {
+    color: var(--ci-color-danger-foreground);
+    background: var(--ci-color-danger);
+  }
+
+  .ci-button--destructive-ghost[data-soft-disabled="true"]:hover {
+    color: var(--ci-button-danger-ghost-fg);
+    background: transparent;
+  }
+
+  .ci-button--warning[data-soft-disabled="true"]:hover {
+    color: var(--ci-color-warning);
+    background: var(--ci-color-warning-bg);
+  }
+
+  /* The assistant fill is already held by its own inactive hover rule; only the ink needs restating. */
+  .ci-button--assistant[data-soft-disabled="true"]:hover {
+    color: var(--ci-color-accent-foreground);
+  }
+
   .ci-button--secondary {
     color: var(--ci-color-foreground);
     background: var(--ci-color-surface);
@@ -339,6 +389,91 @@
     background: var(--ci-color-control-active-bg);
   }
 
+  /* SegmentedControl sets data-size and opts into the capsule Tabs grid (36px, or 30px for
+     "sm"); markup that carries only the classes keeps the rules above. The 2px padding holds
+     the 2px focus ring, so the sideways scroll never clips it. The capsule hugs its segments
+     even in a stretching grid or column; give it a width and the segments share it. */
+  .ci-segmented[data-size] {
+    width: fit-content;
+    max-width: 100%;
+    gap: var(--ci-space-0-5);
+    padding: var(--ci-space-0-5);
+    border-color: var(--ci-field-border);
+    box-shadow: var(--ci-shadow-xs);
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .ci-segmented[data-size] .ci-segmented__item {
+    flex: 1 0 auto;
+    min-height: calc(
+      var(--ci-control-height-md) - var(--ci-space-1) -
+      var(--ci-border-default) - var(--ci-border-default)
+    );
+    justify-content: center;
+    gap: var(--ci-space-1-5);
+    white-space: nowrap;
+    transition:
+      background var(--ci-duration-fast) var(--ci-ease-standard),
+      color var(--ci-duration-fast) var(--ci-ease-standard);
+  }
+
+  .ci-segmented[data-size="sm"] .ci-segmented__item {
+    min-height: var(--ci-badge-height);
+    gap: var(--ci-space-1);
+    padding-inline: var(--ci-space-2);
+    font-size: var(--ci-font-size-xs);
+  }
+
+  .ci-segmented[data-size] .ci-segmented__item:hover:not(:disabled, [data-active="true"]) {
+    color: var(--ci-color-heading);
+  }
+
+  .ci-segmented[data-size] .ci-segmented__item:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .ci-segmented__icon {
+    display: inline-flex;
+    flex: none;
+  }
+
+  .ci-segmented__icon > svg {
+    width: var(--ci-icon-size-sm);
+    height: var(--ci-icon-size-sm);
+    stroke-width: var(--ci-icon-stroke-width);
+  }
+
+  .ci-segmented[data-size="sm"] .ci-segmented__icon > svg {
+    width: var(--ci-icon-size-xs);
+    height: var(--ci-icon-size-xs);
+  }
+
+  /* Forced colours drop backgrounds and box-shadows: the checked segment and the focus
+     indicator move to system colours and an inset outline. */
+  @media (forced-colors: active) {
+    .ci-segmented[data-size] .ci-segmented__item[data-active="true"] {
+      color: HighlightText;
+      background: Highlight;
+    }
+
+    .ci-segmented[data-size] .ci-segmented__item:focus-visible {
+      outline: var(--ci-focus-ring-width) solid CanvasText;
+      outline-offset: calc(0px - var(--ci-focus-ring-width));
+    }
+
+    .ci-segmented[data-size] .ci-segmented__item[data-active="true"]:focus-visible {
+      outline-color: HighlightText;
+    }
+
+    .ci-segmented[data-size] .ci-segmented__item:disabled {
+      color: GrayText;
+      opacity: 1;
+    }
+  }
+
   .ci-icon {
     width: var(--ci-icon-size-md);
     height: var(--ci-icon-size-md);
@@ -364,6 +499,12 @@
     color: var(--ci-color-foreground);
     border-color: var(--ci-color-border);
     background: transparent;
+  }
+
+  /* Muted tone: quieter resting ink for secondary actions in rows and toolbars.
+     `:where()` keeps it at one class, so the hover rule below restores the variant's ink. */
+  .ci-button--tone-muted:where(.ci-button--ghost, .ci-button--outline, .ci-button--secondary) {
+    color: var(--ci-color-text-muted);
   }
 
   .ci-button--outline:hover,
@@ -424,6 +565,19 @@
     background: transparent;
   }
 
+  /* Dense 24px size for row and inline actions: the smallest target WCAG 2.2 (2.5.8) allows.
+     The max() floor keeps it at 24px when a host shrinks the root font size. */
+  .ci-button--size-2xs,
+  .ci-button--size-icon-2xs {
+    min-height: max(24px, var(--ci-control-height-xs));
+    gap: var(--ci-space-1);
+    padding-inline: var(--ci-space-2);
+    font-size: var(--ci-font-size-xs);
+    font-weight: var(--ci-font-weight-medium);
+    line-height: var(--ci-type-control-leading);
+    letter-spacing: var(--ci-type-control-tracking);
+  }
+
   .ci-button--size-xs,
   .ci-button--size-icon-xs {
     min-height: var(--ci-control-height-sm);
@@ -451,6 +605,7 @@
   }
 
   .ci-button--size-icon,
+  .ci-button--size-icon-2xs,
   .ci-button--size-icon-xs,
   .ci-button--size-icon-sm,
   .ci-button--size-icon-lg {
@@ -458,6 +613,7 @@
     padding-inline: 0;
   }
 
+  .ci-button--size-icon-2xs { width: max(24px, var(--ci-control-height-xs)); }
   .ci-button--size-icon-xs { width: var(--ci-control-height-sm); }
   .ci-button--size-icon-sm { width: var(--ci-control-height-md); }
   .ci-button--size-icon-lg { width: var(--ci-control-height-xl); }
@@ -467,6 +623,13 @@
     width: var(--ci-icon-size-sm);
     height: var(--ci-icon-size-sm);
     flex: none;
+  }
+
+  /* 14px icon and spinner, as in the kit's own 24px buttons (ScopeChip and chat attachment remove). */
+  .ci-button--size-2xs > svg,
+  .ci-button--size-icon-2xs > svg {
+    width: 0.875rem;
+    height: 0.875rem;
   }
 
   .ci-button__spinner {
@@ -531,6 +694,25 @@
     height: var(--ci-icon-size-xs);
   }
 
+  /* Small size for dense tables and card headers: a lower box, never smaller text. Half
+     the block padding keeps the 12px line inside 20px with the outline border too, and
+     still leaves wrapped text an inset. It follows the base rule, which it overrides at
+     the same specificity. */
+  .ci-badge--sm {
+    min-height: var(--ci-badge-height-sm);
+    padding-block: calc(var(--ci-space-0-5) / 2);
+  }
+
+  .ci-badge--sm.ci-badge--circle {
+    width: var(--ci-badge-height-sm);
+    min-width: var(--ci-badge-height-sm);
+    height: var(--ci-badge-height-sm);
+  }
+
+  .ci-badge--sm.ci-badge--live {
+    font-size: var(--ci-font-size-xs);
+  }
+
   /* Status tones: AA ink on a subtle tint. They follow every variant rule, so a tone
      recolours any variant; border-color only shows on outline, which keeps its border. */
   .ci-badge--tone-neutral {
@@ -567,6 +749,56 @@
     border-color: var(--ci-badge-accent-ink);
     color: var(--ci-badge-accent-ink);
     background: var(--ci-color-accent-surface-strong);
+  }
+
+  /* Chart-series tones: the series ink on its opaque subtle tint, to name in a badge the
+     series a chart draws. Same rules as the status tones above. */
+  .ci-badge--tone-chart-1 {
+    border-color: var(--ci-chart-1-ink);
+    color: var(--ci-chart-1-ink);
+    background: var(--ci-chart-1-subtle);
+  }
+
+  .ci-badge--tone-chart-2 {
+    border-color: var(--ci-chart-2-ink);
+    color: var(--ci-chart-2-ink);
+    background: var(--ci-chart-2-subtle);
+  }
+
+  .ci-badge--tone-chart-3 {
+    border-color: var(--ci-chart-3-ink);
+    color: var(--ci-chart-3-ink);
+    background: var(--ci-chart-3-subtle);
+  }
+
+  .ci-badge--tone-chart-4 {
+    border-color: var(--ci-chart-4-ink);
+    color: var(--ci-chart-4-ink);
+    background: var(--ci-chart-4-subtle);
+  }
+
+  .ci-badge--tone-chart-5 {
+    border-color: var(--ci-chart-5-ink);
+    color: var(--ci-chart-5-ink);
+    background: var(--ci-chart-5-subtle);
+  }
+
+  .ci-badge--tone-chart-6 {
+    border-color: var(--ci-chart-6-ink);
+    color: var(--ci-chart-6-ink);
+    background: var(--ci-chart-6-subtle);
+  }
+
+  .ci-badge--tone-chart-7 {
+    border-color: var(--ci-chart-7-ink);
+    color: var(--ci-chart-7-ink);
+    background: var(--ci-chart-7-subtle);
+  }
+
+  .ci-badge--tone-chart-8 {
+    border-color: var(--ci-chart-8-ink);
+    color: var(--ci-chart-8-ink);
+    background: var(--ci-chart-8-subtle);
   }
 
   .ci-card__header {
@@ -616,8 +848,88 @@
   .ci-card__footer--between { justify-content: space-between; }
   .ci-card__footer--end { justify-content: flex-end; }
 
+  /* Inset: a flat panel nested one level inside a card or dialog. The panel owns the
+     padding, so children with no slot need no wrapper; the slots only space themselves. */
+  .ci-card[data-surface="inset"] {
+    padding: var(--ci-space-4);
+    border-color: var(--ci-color-border-subtle);
+    border-radius: var(--ci-radius-surface-nested);
+    background: var(--ci-color-surface-subtle);
+    box-shadow: none;
+  }
+
+  .ci-card.ci-brand-tint[data-surface="inset"] {
+    border-color: var(--ci-card-border);
+    background: var(--ci-card-bg);
+  }
+
+  .ci-card[data-surface="inset"] > .ci-card__header {
+    align-items: center;
+    gap: var(--ci-space-0-5) var(--ci-space-3);
+    padding: 0;
+  }
+
+  .ci-card[data-surface="inset"] > .ci-card__header > .ci-card__title {
+    font-size: var(--ci-font-size-sm);
+  }
+
+  .ci-card[data-surface="inset"] > .ci-card__header > .ci-card__description {
+    font-size: var(--ci-font-size-xs);
+  }
+
+  .ci-card[data-surface="inset"] > .ci-card__content {
+    padding: 0;
+  }
+
+  /* Padded insets only: a flush header already carries this gap in its own padding. */
+  .ci-card[data-surface="inset"]:not([data-flush]) > .ci-card__header + .ci-card__content {
+    padding-block-start: var(--ci-space-3);
+  }
+
+  /* A titled inset with no children is a single row: no trailing gap. */
+  .ci-card[data-surface="inset"] > .ci-card__content:empty {
+    display: none;
+  }
+
+  .ci-card[data-surface="inset"] > .ci-card__footer {
+    padding: var(--ci-space-3) 0 0;
+  }
+
+  .ci-card[data-surface="inset"]:not([data-flush]) > .ci-section-header {
+    padding: 0 0 var(--ci-space-3);
+  }
+
+  /* `flush` hands the edges to the children (a table, a list): the header and footer pad themselves. */
+  .ci-card[data-surface="inset"][data-flush] {
+    padding: 0;
+  }
+
+  .ci-card[data-surface="inset"][data-flush] > .ci-card__header {
+    padding: var(--ci-space-4) var(--ci-space-4) var(--ci-space-3);
+  }
+
+  .ci-card[data-surface="inset"][data-flush] > .ci-card__footer {
+    padding: var(--ci-space-3) var(--ci-space-4) var(--ci-space-4);
+  }
+
   .ci-input--sm {
     min-height: var(--ci-control-height-md);
+  }
+
+  /* The height, inline padding and text size of Select and NativeSelect xs, so the
+     three line up in a filter bar or a table row. */
+  .ci-input--xs {
+    min-height: var(--ci-control-height-sm);
+    padding-inline: var(--ci-space-2);
+    font-size: var(--ci-font-size-xs);
+  }
+
+  /* Keys, JSON, code and URLs. The family is repeated in ci-typography.css,
+     outside the layers: the input default there is unlayered and would win. */
+  .ci-input--mono {
+    font-family: var(--ci-font-code);
+    font-variant-numeric: tabular-nums;
+    font-variant-ligatures: none;
   }
 
   .ci-input--error,
@@ -660,6 +972,28 @@
   .ci-input-shell--sm .ci-input { min-height: calc(var(--ci-control-height-md) - 2px); }
   .ci-input-shell__icon { display: inline-flex; flex: none; }
   .ci-input-shell__icon > svg { width: var(--ci-icon-size-sm); height: var(--ci-icon-size-sm); }
+  .ci-input-shell--xs { min-height: var(--ci-control-height-sm); gap: var(--ci-space-1-5); padding-inline: var(--ci-space-2); }
+  .ci-input-shell--xs .ci-input { min-height: calc(var(--ci-control-height-sm) - 2px); }
+  .ci-input-shell--xs .ci-input-shell__icon > svg { width: var(--ci-icon-size-xs); height: var(--ci-icon-size-xs); }
+
+  /* NumberInput: the unit is field text at the inline end, in the shell's muted ink. */
+  .ci-number-input__unit {
+    font: var(--ci-font-weight-regular) var(--ci-font-size-sm) / var(--ci-type-data-leading) var(--ci-font-ui);
+    letter-spacing: var(--ci-type-data-tracking);
+    white-space: nowrap;
+  }
+  .ci-number-input__unit:not(:last-child) { margin-inline-end: var(--ci-space-2); }
+  /* Digits run left to right in every script. Without this a right-to-left document puts the
+     minus sign after the number; the text still starts at the inline start of the field. */
+  .ci-number-input:dir(rtl) { direction: ltr; text-align: right; }
+  .ci-number-input:disabled,
+  .ci-input-shell:has(.ci-number-input:disabled) {
+    border-color: var(--ci-field-border);
+    background: var(--ci-color-surface-muted);
+    cursor: not-allowed;
+    opacity: 0.56;
+  }
+  .ci-input-shell .ci-number-input:disabled { background: transparent; opacity: 1; }
 
   /* Browser autofill paints its own background above the author background.
      An opaque inset surface preserves the normal field tokens without disabling
@@ -833,6 +1167,17 @@
   .ci-textarea--error,
   .ci-textarea[aria-invalid="true"] { border-color: var(--ci-color-danger); }
   .ci-textarea:disabled { cursor: not-allowed; background: var(--ci-color-surface-muted); opacity: 0.56; }
+  /* The editable counterpart of CodePreview: its family, size, leading and tab
+     width. Family and leading are repeated in ci-typography.css, outside the
+     layers: the textarea default there is unlayered and would win. */
+  .ci-textarea--mono {
+    font-family: var(--ci-font-code);
+    font-size: var(--ci-font-size-xs);
+    line-height: var(--ci-type-reading-leading);
+    font-variant-numeric: tabular-nums;
+    font-variant-ligatures: none;
+    tab-size: 2;
+  }
 
   .ci-checkbox,
   .ci-radio {
@@ -1416,6 +1761,13 @@
     border-radius: var(--ci-radius-surface);
     background: var(--ci-color-surface);
   }
+  /* variant="plain": the host (a Card, a panel) is the frame and the surface. */
+  .ci-table-container[data-variant="plain"] { border: 0; border-radius: 0; background: transparent; }
+  /* density sets the cell size tokens that the cells read. Every value sets all four, so a table
+     nested in a dense one can return to the default; with none set, the fallbacks apply. */
+  .ci-table-container[data-density="compact"] { --ci-table-cell-height: 2rem; --ci-table-cell-padding-block: var(--ci-space-1); --ci-table-cell-padding-inline: var(--ci-space-2); --ci-table-font-size: var(--ci-font-size-xs); }
+  .ci-table-container[data-density="default"] { --ci-table-cell-height: initial; --ci-table-cell-padding-block: initial; --ci-table-cell-padding-inline: initial; --ci-table-font-size: initial; }
+  .ci-table-container[data-density="comfortable"] { --ci-table-cell-height: 3rem; --ci-table-cell-padding-block: var(--ci-space-3); --ci-table-cell-padding-inline: var(--ci-space-4); --ci-table-font-size: initial; }
   /* Table makes an overflowing container focusable so the keyboard can scroll it. The inset
      outline stays visible when a parent card clips its overflow. */
   .ci-table-container:focus-visible {
@@ -1438,6 +1790,16 @@
   }
   .ci-table-container[data-capped] > .ci-table > .ci-table__header .ci-table__head--sticky-end {
     z-index: 4;
+    box-shadow: -1px 0 0 var(--ci-color-border-subtle), inset 0 calc(-1 * var(--ci-border-default)) 0 var(--ci-color-border-subtle);
+  }
+  .ci-table-container[data-capped] > .ci-table > .ci-table__header .ci-table__head--sticky-start {
+    z-index: 4;
+    box-shadow: 1px 0 0 var(--ci-color-border-subtle), inset 0 calc(-1 * var(--ci-border-default)) 0 var(--ci-color-border-subtle);
+  }
+  .ci-table-container[data-capped] > .ci-table > .ci-table__header .ci-table__head--sticky-end:dir(rtl) {
+    box-shadow: 1px 0 0 var(--ci-color-border-subtle), inset 0 calc(-1 * var(--ci-border-default)) 0 var(--ci-color-border-subtle);
+  }
+  .ci-table-container[data-capped] > .ci-table > .ci-table__header .ci-table__head--sticky-start:dir(rtl) {
     box-shadow: -1px 0 0 var(--ci-color-border-subtle), inset 0 calc(-1 * var(--ci-border-default)) 0 var(--ci-color-border-subtle);
   }
 
@@ -1482,7 +1844,7 @@
     border-collapse: collapse;
     caption-side: bottom;
     color: var(--ci-color-foreground);
-    font-size: var(--ci-font-size-sm);
+    font-size: var(--ci-table-font-size, var(--ci-font-size-sm));
     font-weight: var(--ci-font-weight-regular);
     line-height: var(--ci-type-body-leading);
     letter-spacing: var(--ci-type-body-tracking);
@@ -1493,17 +1855,59 @@
   .ci-table__body .ci-table__row:last-child { border-bottom: 0; }
   .ci-table__body .ci-table__row:hover { background: linear-gradient(90deg, var(--ci-color-accent-surface-subtle), var(--ci-color-surface)); }
   .ci-table__row[data-state="selected"] { background: var(--ci-color-accent-surface-strong); }
+  /* TableRow onActivate: the row is a tab stop that a click, Enter and Space activate. The outline
+     is inset like the container's, so neither a clipping parent nor the next row can cut it. */
+  .ci-table__row[data-interactive] { cursor: pointer; }
+  .ci-table__row[data-interactive]:focus-visible {
+    outline: var(--ci-focus-ring-width) solid var(--ci-color-focus);
+    outline-offset: calc(-1 * var(--ci-focus-ring-width));
+  }
+  /* A sticky end cell paints over the outline of its row, so it draws its own three edges. */
+  .ci-table__row[data-interactive]:focus-visible > .ci-table__cell--sticky-end {
+    box-shadow:
+      -1px 0 0 var(--ci-color-border-subtle),
+      inset 0 var(--ci-focus-ring-width) 0 var(--ci-color-focus),
+      inset 0 calc(-1 * var(--ci-focus-ring-width)) 0 var(--ci-color-focus),
+      inset calc(-1 * var(--ci-focus-ring-width)) 0 0 var(--ci-color-focus);
+  }
+  /* A sticky start cell covers the other end of the outline and draws the mirror image. In
+     right-to-left the two cells swap physical sides, so each one takes the edges of the other. */
+  .ci-table__row[data-interactive]:focus-visible > .ci-table__cell--sticky-start,
+  .ci-table__row[data-interactive]:focus-visible > .ci-table__cell--sticky-end:dir(rtl) {
+    box-shadow:
+      1px 0 0 var(--ci-color-border-subtle),
+      inset 0 var(--ci-focus-ring-width) 0 var(--ci-color-focus),
+      inset 0 calc(-1 * var(--ci-focus-ring-width)) 0 var(--ci-color-focus),
+      inset var(--ci-focus-ring-width) 0 0 var(--ci-color-focus);
+  }
+  .ci-table__row[data-interactive]:focus-visible > .ci-table__cell--sticky-start:dir(rtl) {
+    box-shadow:
+      -1px 0 0 var(--ci-color-border-subtle),
+      inset 0 var(--ci-focus-ring-width) 0 var(--ci-color-focus),
+      inset 0 calc(-1 * var(--ci-focus-ring-width)) 0 var(--ci-color-focus),
+      inset calc(-1 * var(--ci-focus-ring-width)) 0 0 var(--ci-color-focus);
+  }
+  /* A selected row keeps its fill under the pointer, with or without onActivate. */
+  .ci-table__body .ci-table__row[data-state="selected"]:hover { background: var(--ci-color-accent-surface-strong); }
+  /* Focus scrolls a row into view; this keeps it clear of the pinned header of a capped table. */
+  .ci-table-container[data-capped] .ci-table__row[data-interactive] { scroll-margin-block-start: calc(var(--ci-table-cell-height, 2.75rem) + var(--ci-border-default)); }
   .ci-table__head,
-  .ci-table__cell { height: 2.75rem; padding: var(--ci-space-2) var(--ci-space-3); text-align: left; vertical-align: middle; white-space: nowrap; }
+  .ci-table__cell { height: var(--ci-table-cell-height, 2.75rem); padding: var(--ci-table-cell-padding-block, var(--ci-space-2)) var(--ci-table-cell-padding-inline, var(--ci-space-3)); text-align: start; vertical-align: middle; white-space: nowrap; }
   .ci-table__head { color: var(--ci-color-text-muted); font-size: var(--ci-font-size-xs); font-weight: var(--ci-font-weight-medium); line-height: var(--ci-type-control-leading); letter-spacing: var(--ci-type-control-tracking); }
   .ci-table__cell--numeric,
-  .ci-table__head--numeric { text-align: right; font-variant-numeric: tabular-nums; }
+  .ci-table__head--numeric { text-align: end; font-variant-numeric: tabular-nums; }
   .ci-table__cell--action,
   .ci-table__head--action { width: 3rem; padding-inline: var(--ci-space-2); text-align: center; }
+  /* An explicit align: after numeric and action, so it wins over the alignment they imply
+     (center sits with the DataTable rules further down). */
+  .ci-table__head--start,
+  .ci-table__cell--start { text-align: start; }
+  .ci-table__head--end,
+  .ci-table__cell--end { text-align: end; }
   .ci-table__head--sticky-end,
   .ci-table__cell--sticky-end {
     position: sticky;
-    right: 0;
+    inset-inline-end: 0;
     z-index: 2;
     box-shadow: -1px 0 0 var(--ci-color-border-subtle);
   }
@@ -1516,9 +1920,31 @@
   .ci-table__row[data-state="selected"] > .ci-table__cell--sticky-end {
     background: var(--ci-color-surface-muted);
   }
+  /* sticky="start" mirrors the end edge. Each edge line is on the scrolling side of its cell,
+     which is the other physical side in right-to-left. */
+  .ci-table__head--sticky-start,
+  .ci-table__cell--sticky-start {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 2;
+    box-shadow: 1px 0 0 var(--ci-color-border-subtle);
+  }
+  .ci-table__head--sticky-start {
+    z-index: 3;
+    background: var(--ci-color-surface-subtle);
+  }
+  .ci-table__cell--sticky-start { background: var(--ci-color-surface); }
+  .ci-table__body .ci-table__row:hover > .ci-table__cell--sticky-start,
+  .ci-table__row[data-state="selected"] > .ci-table__cell--sticky-start {
+    background: var(--ci-color-surface-muted);
+  }
+  .ci-table__head--sticky-end:dir(rtl),
+  .ci-table__cell--sticky-end:dir(rtl) { box-shadow: 1px 0 0 var(--ci-color-border-subtle); }
+  .ci-table__head--sticky-start:dir(rtl),
+  .ci-table__cell--sticky-start:dir(rtl) { box-shadow: -1px 0 0 var(--ci-color-border-subtle); }
   .ci-table__footer { border-top: var(--ci-border-default) solid var(--ci-color-border); background: var(--ci-color-surface-subtle); font-weight: var(--ci-font-weight-regular); line-height: var(--ci-type-caption-leading); letter-spacing: var(--ci-type-caption-tracking); }
   .ci-table__caption {
-    padding: var(--ci-space-3);
+    padding: var(--ci-space-3) var(--ci-table-cell-padding-inline, var(--ci-space-3));
     color: var(--ci-color-text-muted);
     font-size: var(--ci-font-size-xs);
     text-align: left;
@@ -1668,17 +2094,50 @@
   .ci-stat--positive .ci-stat__value { color: var(--ci-color-success); }
   .ci-stat--critical .ci-stat__value { color: var(--ci-color-danger); }
   .ci-stat--warning .ci-stat__value { color: var(--ci-color-warning); }
+  .ci-stat--info .ci-stat__value { color: var(--ci-color-info); }
+  .ci-stat--accent .ci-stat__value { color: var(--ci-color-accent-ink); }
+  .ci-stat--muted .ci-stat__value { color: var(--ci-color-text-muted); }
   .ci-stat__hint { margin-top: var(--ci-space-2); color: var(--ci-color-text-subtle); font-size: var(--ci-font-size-xs); font-weight: var(--ci-font-weight-regular); line-height: var(--ci-type-caption-leading); letter-spacing: var(--ci-type-caption-tracking); }
+
+  /* Compact size: key-value tiles inside cards and dense panels. A StatRow passes its size down,
+   * and a Stat that asks for the default size keeps it. The Stat inside a MetricCard belongs to
+   * the card: it takes its size from stat.size only, and the padding rule stays a plain selector
+   * so the card's own padding still wins. */
+  .ci-stat[data-size="sm"],
+  .ci-stat-row[data-size="sm"] .ci-stat:not([data-size="md"]):not(.ci-metric-card__stat) { padding: var(--ci-space-3); }
+  :is(.ci-stat[data-size="sm"], .ci-stat-row[data-size="sm"] .ci-stat:not([data-size="md"]):not(.ci-metric-card__stat)) .ci-stat__label { gap: var(--ci-space-1); }
+  :is(.ci-stat[data-size="sm"], .ci-stat-row[data-size="sm"] .ci-stat:not([data-size="md"]):not(.ci-metric-card__stat)):not([data-label-variant="eyebrow"]) .ci-stat__label {
+    color: var(--ci-color-text-muted);
+    font-size: var(--ci-font-size-xs);
+  }
+  :is(.ci-stat[data-size="sm"], .ci-stat-row[data-size="sm"] .ci-stat:not([data-size="md"]):not(.ci-metric-card__stat)) .ci-stat__icon { width: var(--ci-icon-size-sm); height: var(--ci-icon-size-sm); }
+  :is(.ci-stat[data-size="sm"], .ci-stat-row[data-size="sm"] .ci-stat:not([data-size="md"]):not(.ci-metric-card__stat)) .ci-stat__value {
+    min-height: 0;
+    margin-top: var(--ci-space-1);
+    font-family: var(--ci-font-ui);
+    font-size: var(--ci-font-size-md);
+    font-weight: var(--ci-font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--ci-type-body-leading);
+    letter-spacing: var(--ci-type-body-tracking);
+  }
+  :is(.ci-stat[data-size="sm"], .ci-stat-row[data-size="sm"] .ci-stat:not([data-size="md"]):not(.ci-metric-card__stat)) .ci-stat__hint { margin-top: var(--ci-space-1); }
 
   .ci-progress { display: grid; gap: var(--ci-space-2); }
   .ci-progress__header { display: flex; align-items: center; justify-content: space-between; gap: var(--ci-space-3); color: var(--ci-color-text-muted); font-size: var(--ci-font-size-sm); }
   .ci-progress__value { color: var(--ci-color-heading); font-weight: var(--ci-font-weight-semibold); font-variant-numeric: tabular-nums; }
   .ci-progress__track { width: 100%; height: 0.5rem; overflow: hidden; border-radius: var(--ci-radius-pill); background: var(--ci-color-surface-muted); }
+  /* Thinner tracks for table cells and dense cards. The default size (md) keeps the 0.5rem above and adds no attribute. */
+  .ci-progress[data-size="sm"] .ci-progress__track { height: 0.375rem; }
+  .ci-progress[data-size="xs"] .ci-progress__track { height: 0.25rem; }
   .ci-progress__indicator { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--ci-color-accent-active), var(--ci-color-accent)); transition: width 900ms var(--ci-ease-emphasized); }
   .ci-progress__indicator[data-tone="success"] { background: var(--ci-color-success); }
   .ci-progress__indicator[data-tone="warning"] { background: var(--ci-color-warning); }
   .ci-progress__indicator[data-tone="danger"] { background: var(--ci-color-danger); }
   .ci-progress__indicator[data-tone="info"] { background: var(--ci-color-info); }
+  /* Any CSS colour, set inline by the `color` prop: a chart series or a colour the caller owns.
+     It only reaches colour properties, so a value that is not a colour (a url(), a gradient) paints nothing. */
+  .ci-progress__indicator[data-color] { background-image: none; background-color: var(--ci-progress-color); }
   /* Stacked parts: square inner ends (the pill track clips the outer ones) and a 2px track-coloured seam.
      Every rendered part is non-zero and keeps at least 2px of its own colour; larger parts shrink to make room. */
   .ci-progress__track[data-segmented] { display: flex; }
@@ -1693,8 +2152,14 @@
   .ci-progress__band[data-tone="warning"] { --ci-progress-band-ink: var(--ci-color-warning); }
   .ci-progress__band[data-tone="danger"] { --ci-progress-band-ink: var(--ci-color-danger); }
   .ci-progress__band[data-tone="info"] { --ci-progress-band-ink: var(--ci-color-info); }
+  .ci-progress__band[data-color] { --ci-progress-band-ink: var(--ci-progress-color); }
   .ci-progress__band .ci-progress__track { box-sizing: border-box; height: 0.625rem; border: 1px solid var(--ci-progress-band-ink); }
+  /* The 1px edge sits around the fill, so a band is 2px taller than a plain bar of the same size. */
+  .ci-progress[data-size="sm"] .ci-progress__band .ci-progress__track { height: 0.5rem; }
+  .ci-progress[data-size="xs"] .ci-progress__band .ci-progress__track { height: 0.375rem; }
   .ci-progress__band .ci-progress__indicator { background: var(--ci-progress-band-ink); }
+  /* :where() keeps this at the specificity of the forced-colours fill rule below, which has to win. */
+  .ci-progress__band:where([data-color]) .ci-progress__indicator { background-image: none; background-color: var(--ci-progress-color); }
   .ci-progress__band-legend { min-width: 0; overflow-wrap: anywhere; color: var(--ci-color-text-muted); font-size: var(--ci-font-size-xs); font-variant-numeric: tabular-nums; line-height: var(--ci-type-caption-leading); letter-spacing: var(--ci-type-caption-tracking); }
   @media (forced-colors: active) {
     .ci-progress__track { outline: 1px solid CanvasText; outline-offset: -1px; }
@@ -1821,6 +2286,26 @@
   .ci-alert[data-layout="inline"] .ci-alert__icon { width: var(--ci-icon-size-sm); height: var(--ci-icon-size-sm); background: transparent; }
   .ci-alert[data-layout="inline"].ci-alert--warning { background: var(--ci-color-warning-bg); }
 
+  /* Compact size for dialogs, table rows and nested panels. Declared after the inline layout so
+     it also resizes the inline icon. Text stays at 12px, the dismiss button at 24px. */
+  .ci-alert[data-size="sm"] { gap: var(--ci-space-2); padding: var(--ci-space-2) var(--ci-space-3); }
+  /* A single line centres on the icon and the dismiss button; taller content keeps them at the top. */
+  .ci-alert[data-size="sm"] .ci-alert__body { align-self: center; font-size: var(--ci-font-size-xs); line-height: var(--ci-type-body-leading); }
+  .ci-alert[data-size="sm"] :is(.ci-alert__title, .ci-alert__description) { font-size: var(--ci-font-size-xs); }
+  .ci-alert[data-size="sm"] .ci-alert__title { line-height: var(--ci-type-body-leading); }
+  .ci-alert[data-size="sm"] .ci-alert__description { margin-block-start: var(--ci-space-0-5); }
+  .ci-alert[data-size="sm"] .ci-alert__description:first-child { margin-block-start: 0; }
+  .ci-alert[data-size="sm"] .ci-alert__actions { margin-block-start: var(--ci-space-2); }
+  .ci-alert[data-size="sm"] .ci-alert__icon { width: var(--ci-space-5); height: var(--ci-space-5); }
+  .ci-alert[data-size="sm"] :is(.ci-alert__icon, .ci-alert__dismiss) svg { width: var(--ci-icon-size-xs); height: var(--ci-icon-size-xs); }
+  .ci-alert[data-size="sm"] .ci-alert__dismiss { width: var(--ci-space-6); height: var(--ci-space-6); margin: calc(var(--ci-space-0-5) * -1); margin-inline-start: 0; }
+  .ci-alert[data-size="sm"][data-layout="inline"] { padding-block: var(--ci-space-1-5); }
+  .ci-alert[data-size="sm"][data-layout="inline"] .ci-alert__icon { width: var(--ci-icon-size-xs); height: var(--ci-icon-size-xs); }
+  .ci-alert[data-size="sm"][data-layout="inline"] :is(.ci-alert__description, .ci-alert__actions) { margin-block-start: 0; }
+  /* 12px text needs less room before the actions wrap, so the line also holds inside a dialog. */
+  .ci-alert[data-size="sm"][data-layout="inline"] .ci-alert__body { gap: var(--ci-space-1) var(--ci-space-3); }
+  .ci-alert[data-size="sm"][data-layout="inline"] .ci-alert__message { flex-basis: var(--ci-space-40); }
+
   .ci-tooltip { position: relative; display: inline-flex; }
   .ci-tooltip__content {
     z-index: var(--ci-z-dropdown);
@@ -1837,6 +2322,10 @@
     line-height: var(--ci-type-caption-leading);
     letter-spacing: var(--ci-type-caption-tracking);
   }
+  /* The tooltip has no exit animation. A closed one drops its animation so that it unmounts at
+     once: otherwise a tooltip closed just after opening can wait for an animation end that
+     never comes, and stay on screen. */
+  .ci-tooltip__content[data-state="closed"] { animation: none; }
   .ci-dialog__overlay {
     position: fixed;
     z-index: var(--ci-z-modal);
@@ -2081,6 +2570,57 @@
   .ci-avatar-group__item { display: inline-flex; margin-left: calc(var(--ci-space-2) * -1); }
   .ci-avatar-group__item .ci-avatar { box-shadow: 0 0 0 2px var(--ci-color-background); }
 
+  /* IconChip: an icon on a tinted square or circle. The tones are the Badge pairs (ink on
+     tint), neutral being the base rule; the sizes are the Avatar scale, with the icon at half
+     the chip. font-size carries the icon size to an icon font or a single character. */
+  .ci-icon-chip {
+    --ci-icon-chip-size: 2.5rem;
+    --ci-icon-chip-icon-size: var(--ci-icon-size-md);
+    display: inline-grid;
+    box-sizing: border-box;
+    width: var(--ci-icon-chip-size);
+    height: var(--ci-icon-chip-size);
+    flex: none;
+    place-items: center;
+    border-radius: var(--ci-radius-control);
+    color: var(--ci-color-foreground);
+    background: var(--ci-color-surface-muted);
+    font-family: var(--ci-font-ui);
+    font-size: var(--ci-icon-chip-icon-size);
+    font-weight: var(--ci-font-weight-medium);
+    line-height: 1;
+    vertical-align: middle;
+  }
+  /* Any depth: an icon component may wrap its svg in an element of its own. Only the outermost
+     svg is sized, so one nested in the drawing keeps its geometry. */
+  .ci-icon-chip svg:not(svg svg) { width: var(--ci-icon-chip-icon-size); height: var(--ci-icon-chip-icon-size); stroke-width: var(--ci-icon-stroke-width); }
+  .ci-icon-chip[data-size="xs"] { --ci-icon-chip-size: 1.5rem; --ci-icon-chip-icon-size: var(--ci-icon-size-xs); }
+  .ci-icon-chip[data-size="sm"] { --ci-icon-chip-size: 2rem; --ci-icon-chip-icon-size: var(--ci-icon-size-sm); }
+  .ci-icon-chip[data-size="lg"] { --ci-icon-chip-size: 3rem; --ci-icon-chip-icon-size: var(--ci-icon-size-lg); }
+  .ci-icon-chip[data-size="xl"] { --ci-icon-chip-size: 4rem; --ci-icon-chip-icon-size: var(--ci-space-8); }
+  .ci-icon-chip[data-shape="circle"] { border-radius: var(--ci-radius-full); }
+  .ci-icon-chip[data-tone="success"] { color: var(--ci-color-success); background: var(--ci-color-success-bg); }
+  .ci-icon-chip[data-tone="warning"] { color: var(--ci-color-warning); background: var(--ci-color-warning-bg); }
+  .ci-icon-chip[data-tone="info"] { color: var(--ci-color-info); background: var(--ci-color-info-bg); }
+  .ci-icon-chip[data-tone="danger"] { color: var(--ci-color-danger); background: var(--ci-color-danger-bg); }
+  .ci-icon-chip[data-tone="accent"] { color: var(--ci-badge-accent-ink); background: var(--ci-color-accent-surface-strong); }
+  .ci-icon-chip[data-tone="chart-1"] { color: var(--ci-chart-1-ink); background: var(--ci-chart-1-subtle); }
+  .ci-icon-chip[data-tone="chart-2"] { color: var(--ci-chart-2-ink); background: var(--ci-chart-2-subtle); }
+  .ci-icon-chip[data-tone="chart-3"] { color: var(--ci-chart-3-ink); background: var(--ci-chart-3-subtle); }
+  .ci-icon-chip[data-tone="chart-4"] { color: var(--ci-chart-4-ink); background: var(--ci-chart-4-subtle); }
+  .ci-icon-chip[data-tone="chart-5"] { color: var(--ci-chart-5-ink); background: var(--ci-chart-5-subtle); }
+  .ci-icon-chip[data-tone="chart-6"] { color: var(--ci-chart-6-ink); background: var(--ci-chart-6-subtle); }
+  .ci-icon-chip[data-tone="chart-7"] { color: var(--ci-chart-7-ink); background: var(--ci-chart-7-subtle); }
+  .ci-icon-chip[data-tone="chart-8"] { color: var(--ci-chart-8-ink); background: var(--ci-chart-8-subtle); }
+  /* As the icon of an EmptyState the chip stands alone: the slot drops its own bordered box
+     and stops sizing the icon, which follows the chip. */
+  .ci-empty-state__icon:has(> .ci-icon-chip) { width: auto; height: auto; border: 0; background: none; }
+  .ci-empty-state__icon > .ci-icon-chip svg:not(svg svg) { width: var(--ci-icon-chip-icon-size); height: var(--ci-icon-chip-icon-size); }
+  /* Forced colours drop the tint, so a system-colour edge keeps the shape of the chip. */
+  @media (forced-colors: active) {
+    .ci-icon-chip { border: var(--ci-border-default) solid CanvasText; }
+  }
+
   .ci-accordion { width: 100%; font-family: var(--ci-font-ui); }
   .ci-accordion--bordered { overflow: hidden; border: var(--ci-border-default) solid var(--ci-color-border); border-radius: var(--ci-radius-surface); background: var(--ci-color-surface); }
   .ci-accordion__item + .ci-accordion__item { border-top: var(--ci-border-hairline) solid var(--ci-color-border-subtle); }
@@ -2147,11 +2687,39 @@
   }
   .ci-empty-state[data-compact="true"] { min-height: 10rem; padding: var(--ci-space-5); }
   .ci-empty-state__icon { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: var(--ci-border-default) solid var(--ci-color-border); border-radius: var(--ci-radius-control); background: var(--ci-color-surface); color: var(--ci-color-heading); }
-  .ci-empty-state__icon svg { width: var(--ci-icon-size-md); height: var(--ci-icon-size-md); stroke-width: var(--ci-icon-stroke-width); }
+  /* An IconChip in the slot sizes its own icon; :where() keeps the specificity this rule always had. */
+  .ci-empty-state__icon svg:where(:not(.ci-icon-chip svg)) { width: var(--ci-icon-size-md); height: var(--ci-icon-size-md); stroke-width: var(--ci-icon-stroke-width); }
   .ci-empty-state__content { display: grid; max-width: 28rem; gap: var(--ci-space-1); }
   .ci-empty-state__title { margin: 0; color: var(--ci-color-heading); font-family: var(--ci-font-display); font-size: var(--ci-font-size-2xl); font-weight: var(--ci-font-weight-medium); line-height: var(--ci-type-heading-leading); letter-spacing: var(--ci-type-heading-tracking); }
   .ci-empty-state__description { margin: 0; color: var(--ci-color-text-muted); font-size: var(--ci-font-size-sm); line-height: var(--ci-type-body-leading); font-weight: var(--ci-font-weight-regular); letter-spacing: var(--ci-type-body-tracking); }
   .ci-empty-state__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--ci-space-2); }
+  /* One line for the empty state of a short list, a field or a table cell. Declared after
+     [data-compact] so the panel's minimum height never applies to it. */
+  .ci-empty-state[data-layout="inline"] {
+    display: flex;
+    min-height: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--ci-space-2) var(--ci-space-3);
+    border-style: none;
+    border-radius: var(--ci-radius-control);
+    padding: var(--ci-space-3) var(--ci-space-4);
+    background: transparent;
+    text-align: start;
+  }
+  /* The slot hugs its content: a bare icon is 16px, and any other node (a chip, an avatar, a spinner) keeps its own size. */
+  .ci-empty-state[data-layout="inline"] .ci-empty-state__icon { width: auto; height: auto; flex: none; border: 0; border-radius: 0; background: transparent; color: var(--ci-color-text-muted); }
+  .ci-empty-state[data-layout="inline"] .ci-empty-state__icon > svg { width: var(--ci-icon-size-sm); height: var(--ci-icon-size-sm); }
+  .ci-empty-state[data-layout="inline"] .ci-empty-state__content { display: flex; min-width: 0; max-width: none; flex: 1 1 12rem; flex-wrap: wrap; align-items: baseline; gap: var(--ci-space-1) var(--ci-space-2); }
+  .ci-empty-state[data-layout="inline"] .ci-empty-state__title { font-family: var(--ci-font-ui); font-size: var(--ci-font-size-sm); line-height: var(--ci-type-body-leading); letter-spacing: var(--ci-type-body-tracking); }
+  /* A title on its own is a note, so it reads as muted body text; with a description it stays the heading colour. */
+  .ci-empty-state[data-layout="inline"] .ci-empty-state__title:only-child { color: var(--ci-color-text-muted); font-weight: var(--ci-font-weight-regular); }
+  .ci-empty-state[data-layout="inline"] .ci-empty-state__actions { flex: none; justify-content: flex-start; margin-inline-start: auto; }
+  /* The box is a prop in both layouts. Without it the empty state sits on the surface of its parent. */
+  .ci-empty-state[data-border="solid"] { border-style: solid; }
+  .ci-empty-state[data-border="dashed"] { border-style: dashed; border-color: var(--ci-color-border-strong); }
+  .ci-empty-state[data-border="none"] { border-style: none; background: transparent; }
 
   .ci-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; padding: 0; border: 0; margin: -1px; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 
@@ -2222,6 +2790,8 @@
 
   .ci-pagination { display: flex; width: 100%; justify-content: center; font-family: var(--ci-font-ui); }
   .ci-pagination__content { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--ci-space-1); padding: 0; margin: 0; list-style: none; }
+  /* Button mode (asChild): a <button> first inherits what the link inherits; the link rules below then style both. */
+  :where(button).ci-pagination__link { margin: 0; font: inherit; text-rendering: inherit; cursor: pointer; appearance: none; }
   .ci-pagination__link,
   .ci-pagination__ellipsis { display: inline-flex; min-width: var(--ci-control-height-md); height: var(--ci-control-height-md); align-items: center; justify-content: center; gap: var(--ci-space-1); padding: 0 var(--ci-space-2); border: var(--ci-border-default) solid transparent; border-radius: var(--ci-radius-control); color: var(--ci-color-foreground); background: transparent; font-size: var(--ci-font-size-sm); font-weight: var(--ci-font-weight-medium); text-decoration: none; transition: background-color var(--ci-duration-fast) var(--ci-ease-standard), border-color var(--ci-duration-fast) var(--ci-ease-standard); line-height: var(--ci-type-control-leading); letter-spacing: var(--ci-type-control-tracking); }
   .ci-pagination__link:hover { background: var(--ci-color-surface-muted); }
@@ -2234,6 +2804,13 @@
   .ci-pagination__link--edge { padding-inline: var(--ci-space-3); }
   .ci-pagination__link:not(.ci-pagination__link--edge) { padding-inline: 0; border-radius: var(--ci-radius-full); letter-spacing: 0em; }
   .ci-pagination__ellipsis { color: var(--ci-color-text-muted); }
+  .ci-pagination__summary { display: inline-flex; min-height: var(--ci-control-height-md); align-items: center; padding-inline: var(--ci-space-2); color: var(--ci-color-text-muted); font-size: var(--ci-font-size-sm); font-variant-numeric: tabular-nums; line-height: var(--ci-type-control-leading); white-space: nowrap; }
+  @media (forced-colors: active) {
+    /* The focus ring is a box-shadow, which forced colours drop, and every item already draws its transparent edge. */
+    .ci-pagination__link:focus-visible { outline: 2px solid Highlight; outline-offset: 2px; }
+    .ci-pagination__link[data-active="true"] { border-color: Highlight; }
+    .ci-pagination__link[data-disabled="true"] { color: GrayText; }
+  }
 
   .ci-sidebar-provider { display: flex; width: 100%; min-height: 32rem; align-items: stretch; border-top: var(--ci-border-default) solid var(--ci-color-border); background: var(--ci-color-background); }
   .ci-dashboard-shell { min-height: 100vh; border-top: 0; }
@@ -2300,6 +2877,9 @@
 
   .ci-data-table { width: 100%; font-family: var(--ci-font-ui); }
   .ci-data-table__frame { overflow: hidden; border: var(--ci-border-default) solid var(--ci-color-border-subtle); border-radius: var(--ci-radius-surface); background: var(--ci-color-surface); }
+  /* variant="plain" on DataTable and DataTableShell: the host is the frame and the surface. */
+  .ci-data-table[data-variant="plain"] > .ci-data-table__frame { border: 0; border-radius: 0; background: transparent; }
+  .ci-data-table[data-variant="plain"] .ci-table-container { background: transparent; }
   .ci-data-table__toolbar { display: flex; min-height: 3.75rem; align-items: center; gap: var(--ci-space-3); padding: var(--ci-space-3) var(--ci-space-4); border-bottom: var(--ci-border-hairline) solid var(--ci-color-border-subtle); }
   .ci-data-table__search { position: relative; width: min(22rem, 100%); }
   .ci-data-table__search > svg { position: absolute; z-index: 1; top: 50%; left: var(--ci-space-3); width: var(--ci-icon-size-sm); height: var(--ci-icon-size-sm); color: var(--ci-color-text-muted); transform: translateY(-50%); pointer-events: none; stroke-width: var(--ci-icon-stroke-width); }
@@ -2378,7 +2958,7 @@
     margin-left: 0;
   }
   .ci-data-table-shell__frame .ci-table__body .ci-table__cell {
-    font-size: var(--ci-font-size-xs);
+    font-size: var(--ci-table-font-size, var(--ci-font-size-xs));
     font-weight: var(--ci-font-weight-regular);
     line-height: var(--ci-type-data-leading);
     letter-spacing: var(--ci-type-data-tracking);
@@ -2838,6 +3418,13 @@
   .ci-code-preview[data-variant="surface"] .ci-code-preview__source [data-tone] { color: inherit; }
   .ci-code-preview[data-variant="surface"] .ci-code-preview__source [data-tone="comment"],
   .ci-code-preview[data-variant="surface"] .ci-code-preview__source [data-tone="dim"] { color: var(--ci-color-text-muted); }
+  /* Headerless CodePreview, for one command or URL: the code, then the copy button at the inline end. One line is as tall as the button plus its margin. */
+  .ci-code-preview[data-header="false"] { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+  .ci-code-preview[data-header="false"] .ci-code-preview__pre { padding-block: calc((var(--ci-control-height-sm) + var(--ci-space-1) * 2 - var(--ci-font-size-xs) * var(--ci-type-reading-leading)) / 2); }
+  .ci-code-preview[data-header="false"] .ci-code-preview__copy { margin: var(--ci-space-1); }
+  .ci-code-preview[data-header="false"] .ci-code-preview__error { grid-column: 1 / -1; }
+  /* InlineCode: the .ci-prose code chip for use outside prose. The fill is opaque, so the text ratio holds on any surface. */
+  .ci-inline-code { padding: 0.125em 0.375em; border: var(--ci-border-default) solid var(--ci-color-border-subtle); border-radius: var(--ci-radius-sm); color: var(--ci-color-heading); background: var(--ci-color-surface-subtle); font-family: var(--ci-font-code); font-size: max(0.875em, var(--ci-font-size-xs)); line-height: 1; overflow-wrap: anywhere; direction: ltr; unicode-bidi: isolate; }
 
   /* JsonTree: rows paint no background, so the tone ratios hold on any surface and on hover. */
   .ci-json-tree { display: flex; flex-direction: column; gap: var(--ci-space-2); min-width: 0; min-height: 0; color: var(--ci-color-foreground); font-family: var(--ci-font-code); font-size: var(--ci-font-size-xs); line-height: var(--ci-type-reading-leading); }
@@ -3214,6 +3801,7 @@
 /* Keep code typography stable inside the application typography scope. */
 .ci-code-preview__pre { font-family:var(--ci-font-code); }
 .ci-code-preview__pre code { font-family:inherit; font-size:inherit; line-height:inherit; letter-spacing:inherit; }
+.ci-inline-code { font-family:var(--ci-font-code); line-height:1; }
 .ci-code-preview .ci-code-preview__source [data-syntax-color] { color:var(--ci-code-token-light); }
 [data-theme="dark"] .ci-code-preview .ci-code-preview__source [data-syntax-color] { color:var(--ci-code-token-dark); }
 
@@ -3253,6 +3841,43 @@
 .ci-field__label-row { display:flex;align-items:center;gap:6px; }
 
 .ci-dialog[data-size="wide"] { max-width:36rem; }
+.ci-dialog[data-size="checkout"] { max-width:64rem; }
+
+/* The onboarding action row, adapted for a bounded dialog. The body owns
+   scrolling so form fields never pass behind the header or payment action. */
+.ci-dialog[data-layout="fixed-footer"] {
+  display:flex;
+  flex-direction:column;
+  max-height:calc(100svh - 3rem);
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+.ci-dialog[data-layout="fixed-footer"] > .ci-dialog__header,
+.ci-dialog[data-layout="fixed-footer"] > .ci-dialog__footer { flex:none; }
+.ci-dialog[data-layout="fixed-footer"] > .ci-dialog__body {
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  margin-block:var(--ci-space-6) var(--ci-space-4);
+  margin-inline:-.375rem;
+  padding:.375rem;
+}
+.ci-dialog[data-layout="fixed-footer"] > .ci-dialog__footer {
+  margin-top:0;
+  padding-top:var(--ci-space-4);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+  border-top:1px solid var(--ci-color-border-subtle);
+  align-items:center;
+}
+/* Very short windows cannot fit fixed chrome plus a useful form viewport.
+   Let the complete dialog scroll so every field and the action stay reachable. */
+@media (max-height:400px) {
+  .ci-dialog[data-layout="fixed-footer"] > .ci-dialog__body {
+    flex-shrink:0;
+    overflow:visible;
+  }
+}
 
 /* Opt-in usage workspace foundations. Existing controls retain their defaults. */
 @layer components {
@@ -3384,7 +4009,11 @@
   .ci-scope-chip[data-expanded] .ci-scope-chip__chevron { margin-top: 2px; }
   .ci-scope-chip[data-expanded] .ci-scope-chip__chevron { transform: rotate(180deg); }
   .ci-scope-chip[data-variant="outline"] {
-    gap: 4px; padding: 2px 8px 2px 14px; background: transparent; border-color: var(--ci-color-border-subtle);
+    gap: 4px; padding: 2px 8px 2px 14px;
+  }
+  /* A toned outline chip keeps its Badge tone instead: the tint, with the border in the tone. */
+  .ci-scope-chip[data-variant="outline"]:not([data-tone]) {
+    background: transparent; border-color: var(--ci-color-border-subtle);
   }
   .ci-scope-chip[data-variant="outline"] .ci-scope-chip__summary { min-height: 24px; }
   .ci-scope-chip[data-variant="outline"][data-expanded] .ci-scope-chip__summary { padding-block: 2px; }
@@ -3394,6 +4023,8 @@
   .ci-scope-chip[data-variant="outline"] .ci-scope-chip__remove.ci-button {
     width: 24px; height: 24px; min-height: 24px; margin-right: 0;
   }
+  /* On a tone the remove button hovers on a wash of the ink, not on the neutral ghost fill. */
+  .ci-scope-chip[data-tone] .ci-scope-chip__remove.ci-button:hover { background: color-mix(in srgb, currentColor 18%, transparent); }
 }
 
 @media (forced-colors: active) {
@@ -3409,6 +4040,12 @@
    ring in forced colours. */
 @media (forced-colors: active) {
   .ci-table-container:focus-visible { outline-color: Highlight; }
+  .ci-table__row[data-interactive]:focus-visible { outline-color: Highlight; }
+  /* A sticky cell covers that outline and loses its box-shadow here, so it outlines itself. */
+  .ci-table__row[data-interactive]:focus-visible > .ci-table__cell--sticky-start,
+  .ci-table__row[data-interactive]:focus-visible > .ci-table__cell--sticky-end { outline: var(--ci-focus-ring-width) solid Highlight; outline-offset: calc(-1 * var(--ci-focus-ring-width)); }
+  /* Forced colours drop the selected fill, so the row gets a marker on its leading edge. */
+  .ci-table__row[data-state="selected"] > :first-child { border-inline-start: var(--ci-space-1) solid Highlight; }
 }
 
 @layer components {
@@ -3815,6 +4452,25 @@
   .ci-toggle-chip[data-size="sm"] .ci-toggle-chip__icon > svg { width: var(--ci-icon-size-xs); height: var(--ci-icon-size-xs); }
   .ci-toggle-chip__count { flex: none; min-width: 1.25rem; padding: 0 var(--ci-space-1-5); border-radius: var(--ci-radius-pill); color: var(--ci-color-heading); background: var(--ci-color-surface-muted); font-size: var(--ci-font-size-xs); font-variant-numeric: tabular-nums; letter-spacing: 0em; text-align: center; }
   .ci-toggle-chip[aria-pressed="true"] .ci-toggle-chip__count { color: inherit; background: color-mix(in srgb, currentColor 18%, transparent); }
+  /* tone: the pressed state takes a Badge tone (its ink on its tint) and the border takes
+     the ink, which keeps 3:1 against the surface around a pale tint. Unpressed chips ignore it. */
+  .ci-toggle-chip[data-tone="neutral"][aria-pressed="true"] { border-color: var(--ci-color-foreground); color: var(--ci-color-foreground); background: var(--ci-color-surface-muted); }
+  .ci-toggle-chip[data-tone="success"][aria-pressed="true"] { border-color: var(--ci-color-success); color: var(--ci-color-success); background: var(--ci-color-success-bg); }
+  .ci-toggle-chip[data-tone="warning"][aria-pressed="true"] { border-color: var(--ci-color-warning); color: var(--ci-color-warning); background: var(--ci-color-warning-bg); }
+  .ci-toggle-chip[data-tone="info"][aria-pressed="true"] { border-color: var(--ci-color-info); color: var(--ci-color-info); background: var(--ci-color-info-bg); }
+  .ci-toggle-chip[data-tone="danger"][aria-pressed="true"] { border-color: var(--ci-color-danger); color: var(--ci-color-danger); background: var(--ci-color-danger-bg); }
+  .ci-toggle-chip[data-tone="accent"][aria-pressed="true"] { border-color: var(--ci-badge-accent-ink); color: var(--ci-badge-accent-ink); background: var(--ci-color-accent-surface-strong); }
+  .ci-toggle-chip[data-tone="chart-1"][aria-pressed="true"] { border-color: var(--ci-chart-1-ink); color: var(--ci-chart-1-ink); background: var(--ci-chart-1-subtle); }
+  .ci-toggle-chip[data-tone="chart-2"][aria-pressed="true"] { border-color: var(--ci-chart-2-ink); color: var(--ci-chart-2-ink); background: var(--ci-chart-2-subtle); }
+  .ci-toggle-chip[data-tone="chart-3"][aria-pressed="true"] { border-color: var(--ci-chart-3-ink); color: var(--ci-chart-3-ink); background: var(--ci-chart-3-subtle); }
+  .ci-toggle-chip[data-tone="chart-4"][aria-pressed="true"] { border-color: var(--ci-chart-4-ink); color: var(--ci-chart-4-ink); background: var(--ci-chart-4-subtle); }
+  .ci-toggle-chip[data-tone="chart-5"][aria-pressed="true"] { border-color: var(--ci-chart-5-ink); color: var(--ci-chart-5-ink); background: var(--ci-chart-5-subtle); }
+  .ci-toggle-chip[data-tone="chart-6"][aria-pressed="true"] { border-color: var(--ci-chart-6-ink); color: var(--ci-chart-6-ink); background: var(--ci-chart-6-subtle); }
+  .ci-toggle-chip[data-tone="chart-7"][aria-pressed="true"] { border-color: var(--ci-chart-7-ink); color: var(--ci-chart-7-ink); background: var(--ci-chart-7-subtle); }
+  .ci-toggle-chip[data-tone="chart-8"][aria-pressed="true"] { border-color: var(--ci-chart-8-ink); color: var(--ci-chart-8-ink); background: var(--ci-chart-8-subtle); }
+  /* The 18% wash above would take the count under 4.5:1 on the paler tints, so a toned
+     count stays on the tint and keeps its shape with a hairline. */
+  .ci-toggle-chip[data-tone][aria-pressed="true"] .ci-toggle-chip__count { background: transparent; box-shadow: inset 0 0 0 var(--ci-border-default) currentColor; }
 }
 
 /* Sidebar item/group actions and rendered Markdown/HTML prose. */
@@ -3986,3 +4642,51 @@
     .ci-notification-feed__meta time { width:100%; margin:0; }
   }
 }
+
+@media(max-width:640px) {
+  .ci-table-container[data-mobile-layout="settings"] > table { display:block; min-width:0 !important; width:100%; }
+  .ci-table-container[data-mobile-layout="settings"] thead { position:absolute; width:1px; height:1px; clip-path:inset(50%); overflow:hidden; }
+  .ci-table-container[data-mobile-layout="settings"] tbody { display:block; }
+  .ci-table-container[data-mobile-layout="settings"] tbody tr { display:grid; grid-template-columns:minmax(0,1fr) auto; padding:1rem; gap:.75rem; }
+  .ci-table-container[data-mobile-layout="settings"] tbody td { display:block; height:auto; padding:0 !important; min-width:0; border:0; white-space:normal; overflow-wrap:anywhere; }
+  .ci-table-container[data-mobile-layout="settings"] tbody td:first-child { grid-column:1; grid-row:1; }
+  .ci-table-container[data-mobile-layout="settings"] tbody td:nth-child(2) { grid-column:1 / -1; grid-row:2; }
+  .ci-table-container[data-mobile-layout="settings"] tbody td:last-child { grid-column:2; grid-row:1; }
+}
+
+.ci-workflow-animation { position:relative; width:100%; min-width:0; height:210px; }
+.ci-workflow-animation[data-placement="analysis"] { height:96px; }
+.ci-workflow-animation[data-placement="panel"] { height:100%; min-height:200px; }
+.ci-workflow-animation__art { height:100%; width:100%; }
+.ci-workflow-animation__art > svg { display:block; width:100%; height:100%; }
+.ci-workflow-animation__art--light { display:var(--ci-scheme-dark, block) var(--ci-scheme-light, none); }
+.ci-workflow-animation__art--dark { display:var(--ci-scheme-dark, none) var(--ci-scheme-light, block); }
+:is(.dark,[data-theme="dark"]) .ci-workflow-animation__art--light { display:none; }
+:is(.dark,[data-theme="dark"]) .ci-workflow-animation__art--dark { display:block; }
+.ci-workflow-animation[data-ready="false"] .ci-workflow-animation__art { visibility:hidden; }
+
+/* Application-owned targets with a decorative simulated pointer. */
+.ci-theme.ci-guided-walkthrough { background: transparent; position: fixed; inset: 0; z-index: 100; pointer-events: none; }
+.ci-guided-walkthrough__highlight { position: fixed; border: 2px solid var(--ci-color-accent, #dca67f); border-radius: var(--ci-radius-control, 10px); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ci-color-accent, #dca67f) 20%, transparent); }
+.ci-guided-walkthrough__pointer { position: absolute; right: -18px; bottom: -22px; color: var(--ci-color-heading); fill: var(--ci-color-accent, #dca67f); filter: drop-shadow(0 2px 2px #0005); }
+.ci-guided-walkthrough__panel { position: fixed; right: 16px; bottom: 16px; width: min(352px, calc(100vw - 32px)); height: max-content; max-height: calc(100dvh - 32px); overflow: auto; padding: 16px; pointer-events: auto; border: 1px solid var(--ci-color-border-subtle); border-radius: var(--ci-radius-surface, 16px); background: var(--ci-color-surface); color: var(--ci-color-heading); box-shadow: var(--ci-shadow-lg, 0 8px 32px #0003); font-family: var(--ci-font-ui); font-size: 14px; line-height: 1.5; }
+.ci-guided-walkthrough__heading { display: flex; align-items: center; justify-content: space-between; color: var(--ci-color-text-muted); font-size: 12px; }
+.ci-guided-walkthrough__panel h2 { margin: 8px 0; font-size: 16px; font-weight: 600; }
+.ci-guided-walkthrough__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+@media (forced-colors: active) { .ci-guided-walkthrough__highlight { border-color: Highlight; } .ci-guided-walkthrough__panel { border-color: CanvasText; background: Canvas; color: CanvasText; } }
+
+/* A prominent walkthrough invitation and acknowledged answer feedback. */
+.ci-chat-guide-card { min-width:0; padding:var(--ci-space-4); border:var(--ci-border-hairline) solid color-mix(in srgb, var(--ci-color-accent) 36%, var(--ci-color-border)); border-radius:var(--ci-radius-surface); background:color-mix(in srgb, var(--ci-color-accent) 5%, var(--ci-color-surface)); color:var(--ci-color-foreground); font-family:var(--ci-font-ui); }
+.ci-chat-guide-card__heading { display:flex; align-items:center; gap:var(--ci-space-3); }
+.ci-chat-guide-card__heading > div { min-width:0; }
+.ci-chat-guide-card__icon { display:grid; place-items:center; flex-shrink:0; width:36px; height:36px; border-radius:var(--ci-radius-control); color:var(--ci-color-heading); background:var(--ci-color-accent-surface-strong); }
+.ci-chat-guide-card__eyebrow { margin:0 0 4px; color:var(--ci-color-text-muted); font-size:var(--ci-font-size-xs); line-height:1.5; }
+.ci-chat-guide-card h2 { margin:0; color:var(--ci-color-heading); font-size:var(--ci-font-size-md); font-weight:var(--ci-font-weight-semibold); line-height:1.4; overflow-wrap:anywhere; }
+.ci-chat-guide-card__description { margin:var(--ci-space-3) 0; font-size:var(--ci-font-size-sm); line-height:1.55; color:var(--ci-color-text-muted); }
+.ci-chat-guide-card__action { width:100%; justify-content:center; gap:var(--ci-space-2); }
+.ci-chat-guide-card__note { margin:var(--ci-space-2) 0 0; font-size:var(--ci-font-size-xs); line-height:1.5; text-align:center; color:var(--ci-color-text-muted); }
+.ci-chat-feedback { display:flex; align-items:center; flex-wrap:wrap; gap:var(--ci-space-2); min-width:0; }
+.ci-chat-feedback__button { color:var(--ci-color-text-muted); }
+.ci-chat-feedback__button[data-selected] { color:var(--ci-color-heading); background:var(--ci-color-accent-surface-strong); }
+.ci-chat-feedback__message { display:inline-flex; align-items:center; gap:4px; color:var(--ci-color-text-muted); font-size:var(--ci-font-size-xs); line-height:1.5; }
+.ci-chat-feedback__message[data-error] { color:var(--ci-color-danger); }

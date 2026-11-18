@@ -20,6 +20,28 @@ export interface SearchableSelectOption {
   trailingLabel?: string;
 }
 
+/** Decides whether an option stays for a non-blank query. */
+export type SearchableSelectFilter = (query: string, option: SearchableSelectOption) => boolean;
+
+// Case and accents are dropped, so "sao" finds "São Paulo". The lower-casing is locale-independent on
+// purpose: toLocaleLowerCase() follows the browser language, and in Turkish and Azerbaijani it turns
+// "I" into a dotless "ı", so the label "OpenAI" never matched the query "openai". Dotted and dotless
+// i both fold to a plain "i" here.
+function fold(text: string) {
+  return text.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").replace(/ı/g, "i");
+}
+
+function matchesEveryWord(query: string, option: SearchableSelectOption) {
+  const text = fold(`${option.label} ${option.description ?? ""} ${option.keywords ?? ""} ${option.group ?? ""}`);
+  return fold(query).trim().split(/\s+/).every((word) => text.includes(word));
+}
+
+// Enter, Escape and the arrows belong to an input method while it composes. Key code 229 covers the
+// browsers that end the composition before they send the keydown that confirmed it.
+function fromInputMethod(event: { isComposing: boolean; keyCode: number }) {
+  return event.isComposing || event.keyCode === 229;
+}
+
 export interface SearchableSelectProps {
   id?: string;
   value: string;
@@ -39,6 +61,11 @@ export interface SearchableSelectProps {
   optionLayout?: "default" | "model";
   /** Always available at the end of the results, including an empty search. */
   action?: { label: string; icon?: ReactNode; disabled?: boolean; onSelect: () => void };
+  /**
+   * Replaces the default filter, which keeps an option when every word of the query appears in its
+   * `label`, `description`, `keywords` or `group`, ignoring case and accents in any browser language.
+   */
+  filter?: SearchableSelectFilter;
 }
 
 /** Single selection with searchable labels, descriptions, and aliases. */
@@ -46,21 +73,18 @@ export function SearchableSelect({
   id, value, onValueChange, options, label = "Choose an option",
   placeholder = "Select…", searchPlaceholder = "Search options…",
   emptyMessage = "No matching options", disabled, className,
-  variant = "capsule", align = "start", optionLayout = "default", action,
+  variant = "capsule", align = "start", optionLayout = "default", action, filter = matchesEveryWord,
 }: SearchableSelectProps) {
   const listId = useId();
   const input = useRef<HTMLInputElement>(null);
   const actionSelected = useRef(false);
   const list = useRef<HTMLDivElement>(null);
+  const composing = useRef(false);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const selected = options.find((option) => option.value === value);
-  const terms = query.toLocaleLowerCase().trim().split(/\s+/);
-  const matches = options.filter((option) => {
-    const text = `${option.label} ${option.description ?? ""} ${option.keywords ?? ""} ${option.group ?? ""}`.toLocaleLowerCase();
-    return terms.every((term) => text.includes(term));
-  });
+  const matches = query.trim() === "" ? options : options.filter((option) => filter(query, option));
   const actionOption: SearchableSelectOption | undefined = action ? {
     value: `${listId}-action`, label: action.label, icon: action.icon, disabled: action.disabled,
   } : undefined;
@@ -83,6 +107,8 @@ export function SearchableSelect({
 
   function changeOpen(next: boolean) {
     setOpen(next);
+    // A composition cut short by closing never reports its end.
+    composing.current = false;
     if (next) {
       actionSelected.current = false;
       setQuery("");
@@ -144,6 +170,7 @@ export function SearchableSelect({
     </PopoverTrigger>
     <PopoverContent className={cn("ci-searchable-select__popover", `ci-searchable-select__popover--${variant}`, optionLayout === "model" && "ci-searchable-select__popover--model")} align={align}
       onCloseAutoFocus={(event) => { if (actionSelected.current) event.preventDefault(); }}
+      onEscapeKeyDown={(event) => { if (composing.current || fromInputMethod(event)) event.preventDefault(); }}
       onOpenAutoFocus={(event) => { event.preventDefault(); input.current?.focus(); }}>
       <div className="ci-searchable-select__search">
         <Input ref={input} type="search" name="option-query" autoComplete="off" autoCorrect="off"
@@ -152,7 +179,10 @@ export function SearchableSelect({
           aria-activedescendant={activeOption ? optionId(active) : undefined}
           leadingIcon={<Search size={16} />} value={query} placeholder={searchPlaceholder}
           onChange={(event) => { setQuery(event.target.value); setActive(0); }}
+          onCompositionStart={() => { composing.current = true; }}
+          onCompositionEnd={() => { composing.current = false; }}
           onKeyDown={(event) => {
+            if (composing.current || fromInputMethod(event.nativeEvent)) return;
             if (event.key === "ArrowDown" || event.key === "ArrowUp") {
               event.preventDefault(); move(event.key === "ArrowDown" ? 1 : -1);
             } else if (event.key === "Enter") {

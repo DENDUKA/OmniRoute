@@ -6,6 +6,9 @@
 .ci-announcements[data-tone="success"] { --ci-announcement-tone:var(--ci-color-success); }
 .ci-announcements[data-tone="warning"] { --ci-announcement-tone:var(--ci-color-warning); }
 .ci-announcements[data-tone="violet"] { --ci-announcement-tone:var(--ci-chart-3); }
+/* A third-party brand (item.brandColor): only the tint, border and ink that .ci-brand-tint derives, never the raw hex. */
+.ci-announcements[data-tone="brand"] { --ci-announcement-tone:var(--ci-brand); border-color:var(--ci-brand-border); background:linear-gradient(115deg,var(--ci-brand-subtle),var(--ci-color-surface) 72%); }
+.ci-announcements[data-tone="brand"] .ci-announcements__icon { border-color:var(--ci-brand-border); background:var(--ci-brand-subtle); color:var(--ci-brand-ink); }
 .ci-announcements-collapsed { display:block; width:100%; }
 .ci-announcements-collapsed .ci-announcements__controls { position:static; display:block; width:100%; margin:0; }
 .ci-announcements-collapsed .ci-announcements__controls .ci-announcements__restore { width:100%; height:3rem; min-height:3rem; justify-content:flex-start; gap:.625rem; padding:0 1rem; border:1px solid var(--ci-color-border); border-radius:var(--ci-radius-md); background:var(--ci-color-surface); color:var(--ci-color-heading); }
@@ -53,6 +56,7 @@
 .ci-announcements[data-variant="media"][data-tone="success"] { --ci-announcement-tone:var(--ci-color-announcement-success); }
 .ci-announcements[data-variant="media"][data-tone="violet"] { --ci-announcement-tone:var(--ci-color-announcement-violet); }
 .ci-announcements[data-variant="media"][data-tone="warning"] { --ci-announcement-tone:var(--ci-color-announcement-warning); }
+.ci-announcements[data-variant="media"][data-tone="brand"] { --ci-announcement-tone:var(--ci-brand); border-color:var(--ci-brand-border); background:linear-gradient(110deg,var(--ci-brand-subtle),var(--ci-color-surface) 92%); }
 .ci-announcements[data-variant="media"] { padding:0; overflow:hidden; border-radius:var(--ci-radius-md); background:linear-gradient(110deg,color-mix(in srgb,var(--ci-announcement-tone) 7%,var(--ci-color-surface)),var(--ci-color-surface) 92%); }
 .ci-announcements[data-variant="media"] .ci-announcements__slide { display:grid; align-items:stretch; grid-template-columns:30% minmax(0,1fr); gap:0; min-height:258px; }
 .ci-announcements[data-variant="media"] .ci-announcements__top { display:contents; }

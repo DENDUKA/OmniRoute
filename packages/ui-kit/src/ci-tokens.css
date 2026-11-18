@@ -308,11 +308,13 @@
   --ci-space-40: 10rem;
 
   /* --- sizing and layout --------------------------------------------------- */
+  --ci-control-height-xs: 1.5rem;
   --ci-control-height-sm: 2rem;
   --ci-control-height-md: 2.25rem;
   --ci-control-height-lg: 2.5rem;
   --ci-control-height-xl: 3rem;
   --ci-badge-height: 1.5rem;
+  --ci-badge-height-sm: 1.25rem;
   --ci-icon-size-sm: 1rem;
   --ci-icon-size-xs: 0.75rem;
   --ci-icon-size-md: 1.25rem;
@@ -335,6 +337,8 @@
   --ci-radius-full: 9999px;
   --ci-radius-control: var(--ci-radius-md);
   --ci-radius-surface: var(--ci-radius-sm);
+  /* A surface inside a surface (an inset card). Never rounder than --ci-radius-surface. */
+  --ci-radius-surface-nested: var(--ci-radius-sm);
   --ci-radius-pill: var(--ci-radius-full);
   --ci-border-hairline: 1px;
   --ci-border-default: 1px;

@@ -63,14 +63,16 @@ export interface MetricDonutProps extends Omit<MetricChartFrameProps, "children"
   label: string;
   data: MetricDonutDatum[];
   totalLabel?: string;
+  /** Read in the accessible name for a value that is not measured. Defaults to "unavailable". */
+  unavailableLabel?: string;
 }
-export function MetricDonut({ data, label, totalLabel = "total", className, ...props }: MetricDonutProps) {
+export function MetricDonut({ data, label, totalLabel = "total", unavailableLabel = "unavailable", className, ...props }: MetricDonutProps) {
   const replay = useContext(MetricMotionContext);
   const sum = data.reduce((value, item) => value + item.value, 0);
   const total = data.every((item) => measured(item.value)) && Number.isFinite(sum) ? sum : null;
   let offset = 0;
   return <MetricChartFrame {...props} className={cn("ci-metric-donut", className)}
-    aria-label={`${label}: ${data.map((item) => `${item.label} ${measured(item.value) ? item.value : "unavailable"}`).join(", ")}`}>
+    aria-label={`${label}: ${data.map((item) => `${item.label} ${measured(item.value) ? item.value : unavailableLabel}`).join(", ")}`}>
     <div className="ci-metric-donut__summary">
       <div className="ci-metric-donut__chart">
         <svg key={replay} viewBox="0 0 160 160" aria-hidden>

@@ -194,6 +194,7 @@ export const ciTokens = {
     full: "9999px",
   },
   size: {
+    controlXs: "1.5rem",
     controlSm: "2rem",
     controlMd: "2.25rem",
     controlLg: "2.5rem",
@@ -262,6 +263,7 @@ export const ciTokenReferences = {
   radius: {
     control: "var(--ci-radius-control)",
     surface: "var(--ci-radius-surface)",
+    surfaceNested: "var(--ci-radius-surface-nested)",
     pill: "var(--ci-radius-pill)",
   },
 } as const;

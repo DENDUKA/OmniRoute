@@ -21,7 +21,9 @@ export const DialogTrigger = forwardRef<HTMLButtonElement, DialogTriggerProps>(f
 export interface DialogContentProps extends Omit<ComponentProps<typeof DialogPrimitive.Content>, "asChild"> {
   showCloseButton?: boolean;
   /** Wider review forms while retaining viewport scrolling on small screens. */
-  size?: "default" | "wide";
+  size?: "default" | "wide" | "checkout";
+  /** Keep the header and footer visible while DialogBody scrolls. */
+  layout?: "default" | "fixed-footer";
   /** Accessible name of the built-in close button. Defaults to "Close dialog". */
   closeLabel?: string;
   overlayClassName?: string;
@@ -32,6 +34,7 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(func
   overlayClassName,
   showCloseButton = true,
   size = "default",
+  layout = "default",
   closeLabel = "Close dialog",
   forceMount,
   children,
@@ -49,6 +52,7 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(func
         forceMount={forceMount}
         data-slot="dialog-content"
         data-size={size}
+        data-layout={layout === "fixed-footer" ? layout : undefined}
         className={cn("ci-dialog", className)}
         {...props}
       >
@@ -72,6 +76,10 @@ export const DialogClose = forwardRef<HTMLButtonElement, DialogCloseProps>(funct
 export function DialogHeader({ className, ...props }: ComponentProps<"div">) {
   return <div data-slot="dialog-header" className={cn("ci-dialog__header", className)} {...props} />;
 }
+
+export const DialogBody = forwardRef<HTMLDivElement, ComponentProps<"div">>(function DialogBody({ className, ...props }, ref) {
+  return <div ref={ref} data-slot="dialog-body" className={cn("ci-dialog__body", className)} {...props} />;
+});
 
 export function DialogFooter({ className, ...props }: ComponentProps<"div">) {
   return <div data-slot="dialog-footer" className={cn("ci-dialog__footer", className)} {...props} />;
