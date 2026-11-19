@@ -1,0 +1,2097 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile:
+#1 transferring dockerfile: 27.70kB 0.0s done
+#1 DONE 0.2s
+
+#2 [internal] load metadata for docker.io/library/node:26.12.1-trixie-slim
+#2 ...
+
+#3 [auth] library/node:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:26.12.1-trixie-slim
+#2 DONE 2.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context:
+#4 transferring context: 4.37kB done
+#4 DONE 0.2s
+
+#5 [internal] load build context
+#5 DONE 0.0s
+
+#6 [base 1/4] FROM docker.io/library/node:26.12.1-trixie-slim@sha256:94816674c62774da0d099a947bf4613b9e1972a2733abd0d0cd80e795f8411d0
+#6 resolve docker.io/library/node:26.12.1-trixie-slim@sha256:94816674c62774da0d099a947bf4613b9e1972a2733abd0d0cd80e795f8411d0 0.1s done
+#6 DONE 0.2s
+
+#7 [base 2/4] WORKDIR /app
+#7 CACHED
+
+#8 [base 3/4] RUN --mount=type=cache,id=s/92ca8a61-c1ba-421f-a389-d48ac7258c2d-apt-cache,target=/var/cache/apt,sharing=locked   --mount=type=cache,id=s/92ca8a61-c1ba-421f-a389-d48ac7258c2d-apt-lists,target=/var/lib/apt/lists,sharing=locked   sed -i -E "s|https?://deb.debian.org|http://deb.debian.org|g" /etc/apt/sources.list.d/debian.sources   && if [ -n "" ]; then npm config set registry ""; fi   && apt-get update   && apt-get upgrade -y   && apt-get install -y --no-install-recommends libsecret-1-0 ca-certificates   && rm -rf /var/lib/apt/lists/*
+#8 CACHED
+
+#9 [base 4/4] RUN set -eux;   npm install -g npm@latest;   npm install --prefix /tmp/npm-cve-patch --no-audit --no-fund --ignore-scripts     --install-strategy=nested     brace-expansion@5.0.12 ip-address@10.7.4 postcss-selector-parser@7.1.6 tar@7.5.22 undici@6.29.1;   for pkg in brace-expansion ip-address postcss-selector-parser tar undici; do     test -d "/usr/local/lib/node_modules/npm/node_modules/$pkg";     rm -rf "/usr/local/lib/node_modules/npm/node_modules/$pkg";     cp -R "/tmp/npm-cve-patch/node_modules/$pkg"       "/usr/local/lib/node_modules/npm/node_modules/$pkg";   done;   rm -rf /tmp/npm-cve-patch;   node -e "for (const p of ['brace-expansion','ip-address','postcss-selector-parser','tar','undici']) console.log(p, require('/usr/local/lib/node_modules/npm/node_modules/'+p+'/package.json').version);";   npm --version;   npm cache clean --force
+#9 CACHED
+
+#10 [runner-base 1/7] RUN mkdir -p /app/data && chown node:node /app /app/data
+#10 CACHED
+
+#5 [internal] load build context
+#5 transferring context: 59.01MB 4.8s
+#5 transferring context: 98.13MB 9.8s
+#5 transferring context: 151.47MB 15.9s
+#5 transferring context: 197.42MB 21.0s
+#5 transferring context: 261.09MB 26.1s
+#5 transferring context: 324.74MB 31.1s
+#5 transferring context: 392.77MB 36.3s
+#5 transferring context: 435.22MB 54.6s
+#5 transferring context: 506.01MB 59.7s
+#5 transferring context: 558.43MB 82.4s
+#5 transferring context: 574.53MB 84.7s done
+#5 DONE 99.3s
+
+#11 [builder  2/10] COPY package*.json ./
+#11 CACHED
+
+#12 [builder  4/10] COPY scripts/build/postinstall.mjs ./scripts/build/postinstall.mjs
+#12 CACHED
+
+#13 [builder  7/10] RUN test -f package-lock.json   || (echo "package-lock.json is required for reproducible Docker builds" >&2 && exit 1)
+#13 CACHED
+
+#14 [builder  3/10] COPY open-sse/package.json ./open-sse/package.json
+#14 CACHED
+
+#15 [builder  5/10] COPY scripts/build/postinstallSupport.mjs ./scripts/build/postinstallSupport.mjs
+#15 CACHED
+
+#16 [builder  6/10] COPY scripts/build/native-binary-compat.mjs ./scripts/build/native-binary-compat.mjs
+#16 CACHED
+
+#17 [builder  1/10] RUN --mount=type=cache,id=s/92ca8a61-c1ba-421f-a389-d48ac7258c2d-apt-cache,target=/var/cache/apt,sharing=locked   --mount=type=cache,id=s/92ca8a61-c1ba-421f-a389-d48ac7258c2d-apt-lists,target=/var/lib/apt/lists,sharing=locked   apt-get update   && apt-get install -y --no-install-recommends python3 make g++   && rm -rf /var/lib/apt/lists/*
+#17 CACHED
+
+#18 [builder  8/10] RUN --mount=type=cache,id=s/92ca8a61-c1ba-421f-a389-d48ac7258c2d-npm-cache,target=/root/.npm   npm ci --include=optional --no-audit --no-fund --legacy-peer-deps --ignore-scripts   && (cd node_modules/better-sqlite3       && if [ -n "" ]; then export NODEJS_ORG_MIRROR=""; fi       && node /usr/local/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js rebuild --force_build=1)   && test -f node_modules/better-sqlite3/build/Release/better_sqlite3.node   && node -e "require('better-sqlite3')(':memory:').close()"   && node -e "const wreq=require('wreq-js'); if(typeof wreq.createTransport!=='function') process.exit(1)"
+#18 CACHED
+
+#19 [builder  9/10] COPY . ./
+#19 DONE 79.9s
+
+#20 [builder 10/10] RUN --mount=type=cache,id=s/92ca8a61-c1ba-421f-a389-d48ac7258c2d-next-cache,target=/app/.build/next/cache   mkdir -p /app/data   && npm run build   && node --input-type=module -e "import { createRequire } from 'node:module'; import { pathToFileURL } from 'node:url'; const standaloneRoot = '/app/.build/next/standalone/node_modules/'; const require = createRequire('/app/.build/next/standalone/package.json'); for (const pkg of ['@atjsh/llmlingua-2', '@huggingface/transformers', 'js-tiktoken']) { const resolved = require.resolve(pkg); if (!resolved.startsWith(standaloneRoot)) throw new Error(pkg + ' resolved outside standalone: ' + resolved); await import(pathToFileURL(resolved).href); } const onnxRuntime = require.resolve('onnxruntime-node'); if (!onnxRuntime.startsWith(standaloneRoot)) throw new Error('onnxruntime-node resolved outside standalone: ' + onnxRuntime); await import(pathToFileURL(onnxRuntime).href);"
+#20 2.928 npm warn Unknown project config "onnxruntime-node-install". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+#20 2.993 npm notice run omniroute@3.8.55 prebuild
+#20 2.993 npm notice run npm run check:native-deps
+#20 3.139 npm warn Unknown env config "onnxruntime-node-install". This will error in a future major version of npm. See `npm help npmrc` for supported config options.
+#20 3.153 npm warn Unknown project config "onnxruntime-node-install". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+#20 3.162 npm notice run omniroute@3.8.55 check:native-deps
+#20 3.162 npm notice run node scripts/check/check-native-deps.mjs
+#20 3.246 [check-native-deps] OK ΓÇö all 32 externalised packages resolve (8 optional deps checked).
+#20 3.276 npm notice run omniroute@3.8.55 build
+#20 3.276 npm notice run node scripts/build/build-next-isolated.mjs
+#20 9.039 Γû▓ Next.js 16.4.6 (webpack)
+#20 11.54 [MDX] generated files in 52.84159600000021ms
+#20 11.58 Γ£ô Running next.config.mjs took 2.5s
+#20 11.89 - Experiments (use with caution):
+#20 11.89   ┬╖ optimizePackageImports
+#20 11.89   ┬╖ proxyClientMaxBodySize: "512mb"
+#20 11.89   ┬╖ proxyTimeout: 600000
+#20 11.89   ┬╖ serverActions
+#20 11.89   Γ£ô webpackBuildWorker
+#20 11.89   Γ£ô webpackMemoryOptimizations
+#20 11.89 
+#20 12.07   Creating an optimized production build ...
+#20 374.6 ΓÜá Compiled with warnings in 6.0min
+#20 374.6 
+#20 374.6 ./open-sse/executors/codex.ts
+#20 374.6 Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+#20 374.6 
+#20 374.6 Import trace for requested module:
+#20 374.6 ./open-sse/executors/codex.ts
+#20 374.6 ./open-sse/services/codexAccount/quota.ts
+#20 374.6 ./open-sse/services/codexAccount/index.ts
+#20 374.6 ./src/sse/services/auth.ts
+#20 374.6 ./src/server/authz/policies/management.ts
+#20 374.6 ./src/server/authz/pipeline.ts
+#20 374.6 
+#20 374.6 ./open-sse/utils/optionalPlaywrightCore.ts
+#20 374.6 module.createRequire failed parsing argument.
+#20 374.6 
+#20 374.6 Import trace for requested module:
+#20 374.6 ./open-sse/utils/optionalPlaywrightCore.ts
+#20 374.6 ./open-sse/vendor/codex-chatgpt-web/browser-login.ts
+#20 374.6 ./open-sse/executors/chatgpt-web-codex/storageState.ts
+#20 374.6 ./open-sse/executors/chatgpt-web-codex/runtime.ts
+#20 374.6 ./src/lib/gracefulShutdown.ts
+#20 374.6 ./src/server/authz/pipeline.ts
+#20 374.6 
+#20 374.6 ./open-sse/executors/codex.ts
+#20 374.6 Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+#20 374.6 
+#20 374.6 Import trace for requested module:
+#20 374.6 ./open-sse/executors/codex.ts
+#20 374.6 ./src/lib/services/quotaAutoPing.ts
+#20 374.6 ./src/instrumentation-node.ts
+#20 374.6 
+#20 374.6 ./open-sse/utils/optionalPlaywrightCore.ts
+#20 374.6 module.createRequire failed parsing argument.
+#20 374.6 
+#20 374.6 Import trace for requested module:
+#20 374.6 ./open-sse/utils/optionalPlaywrightCore.ts
+#20 374.6 ./open-sse/vendor/codex-chatgpt-web/browser-login.ts
+#20 374.6 ./open-sse/executors/chatgpt-web-codex/storageState.ts
+#20 374.6 ./open-sse/executors/chatgpt-web-codex/runtime.ts
+#20 374.6 ./src/lib/gracefulShutdown.ts
+#20 374.6 ./src/instrumentation-node.ts
+#20 374.6 
+#20 374.6 ./src/lib/logExport/destinations/otlpHttp.ts
+#20 374.6 Should not import the named export 'version' (imported as 'version') from default-exporting module (only default export is available soon)
+#20 374.6 
+#20 374.6 Import trace for requested module:
+#20 374.6 ./src/lib/logExport/destinations/otlpHttp.ts
+#20 374.6 ./src/lib/logExport/registry.ts
+#20 374.6 ./src/lib/logExport/runner.ts
+#20 374.6 ./src/lib/jobs/logExportJob.ts
+#20 374.6 ./src/lib/initCloudSync.ts
+#20 374.6 ./src/instrumentation-node.ts
+#20 374.6 
+#20 374.6 ./open-sse/executors/codex.ts
+#20 374.6 Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+#20 374.6 
+#20 374.6 Import trace for requested module:
+#20 374.6 ./open-sse/executors/codex.ts
+#20 374.6 ./src/app/api/internal/codex-responses-ws/route.ts
+#20 374.6 
+#20 374.6 ./open-sse/utils/optionalPlaywrightCore.ts
+#20 374.6 module.createRequire failed parsing argument.
+#20 374.6 
+#20 374.6 Import trace for requested module:
+#20 374.6 ./open-sse/utils/optionalPlaywrightCore.ts
+#20 374.6 ./open-sse/vendor/codex-chatgpt-web/browser-login.ts
+#20 374.6 ./open-sse/executors/chatgpt-web-codex/doctor.ts
+#20 374.6 ./open-sse/services/chatgptWebCodexAdmin.ts
+#20 374.6 ./src/app/api/providers/[id]/chatgpt-web-codex-doctor/route.ts
+#20 374.6 
+#20 374.6 ./src/lib/logExport/destinations/otlpHttp.ts
+#20 374.6 Should not import the named export 'version' (imported as 'version') from default-exporting module (only default export is available soon)
+#20 374.6 
+#20 374.6 Import trace for requested module:
+#20 374.6 ./src/lib/logExport/destinations/otlpHttp.ts
+#20 374.6 ./src/lib/logExport/registry.ts
+#20 374.6 ./src/app/api/log-export/destinations/route.ts
+#20 374.6 
+#20 492.2 Γ£ô Compiled successfully in 7.8min
+#20 492.2   Skipping validation of types
+#20 492.2   Finished TypeScript config validation in 27ms ...
+#20 492.2   Collecting page data using 1 worker ...
+#20 493.5 [DB] Build phase detected ΓÇö using no-op SQLite stub (never queried)
+#20 493.7 [REDIS] REDIS_URL is not set in production. Using in-memory rate limiting.
+#20 495.6 [INFO] [PLUGIN_SCANNER] scanner.dir_resolved {"dir":"/root/.omniroute/plugins","source":"home"}
+#20 495.6 [INFO] [MEMORY_MANAGER] Registered backend {"id":"sqlite","displayName":"SQLite"}
+#20 498.3 [CREDENTIALS] No external credentials file found, using defaults.
+#20 502.8   Generating static pages using 1 worker (0/672) ...
+#20 504.9   Generating static pages using 1 worker (168/672) 
+#20 505.2   Generating static pages using 1 worker (336/672) 
+#20 524.3   Generating static pages using 1 worker (504/672) 
+#20 524.7 Γ£ô Generating static pages using 1 worker (672/672) in 22.0s
+#20 531.8   Finalizing page optimization ...
+#20 531.8   Collecting build traces ...
+#20 720.8 
+#20 720.9 Route (app)
+#20 720.9 Γöî ╞Æ /
+#20 720.9 Γö£ ╞Æ /_not-found
+#20 720.9 Γö£ ╞Æ /.well-known/agent-card.json
+#20 720.9 Γö£ ╞Æ /.well-known/agent.json
+#20 720.9 Γö£ ╞Æ /400
+#20 720.9 Γö£ ╞Æ /401
+#20 720.9 Γö£ ╞Æ /403
+#20 720.9 Γö£ ╞Æ /408
+#20 720.9 Γö£ ╞Æ /429
+#20 720.9 Γö£ ╞Æ /500
+#20 720.9 Γö£ ╞Æ /502
+#20 720.9 Γö£ ╞Æ /503
+#20 720.9 Γö£ ╞Æ /a2a
+#20 720.9 Γö£ ╞Æ /api/[...omnirouteApiCatchAll]
+#20 720.9 Γö£ ╞Æ /api/a2a/status
+#20 720.9 Γö£ ╞Æ /api/a2a/tasks
+#20 720.9 Γö£ ╞Æ /api/a2a/tasks/[id]
+#20 720.9 Γö£ ╞Æ /api/a2a/tasks/[id]/cancel
+#20 720.9 Γö£ ╞Æ /api/a2a/tasks/history
+#20 720.9 Γö£ ╞Æ /api/acp/agents
+#20 720.9 Γö£ ╞Æ /api/admin/concurrency
+#20 720.9 Γö£ ╞Æ /api/admin/proxy-pool-visibility
+#20 720.9 Γö£ ╞Æ /api/agent-skills
+#20 720.9 Γö£ ╞Æ /api/agent-skills/[id]
+#20 720.9 Γö£ ╞Æ /api/agent-skills/[id]/raw
+#20 720.9 Γö£ ╞Æ /api/agent-skills/coverage
+#20 720.9 Γö£ ╞Æ /api/agent-skills/generate
+#20 720.9 Γö£ ╞Æ /api/analytics/auto-routing
+#20 720.9 Γö£ ╞Æ /api/analytics/compression
+#20 720.9 Γö£ ╞Æ /api/analytics/diversity
+#20 720.9 Γö£ ╞Æ /api/assess
+#20 720.9 Γö£ ╞Æ /api/auth/csrf
+#20 720.9 Γö£ ╞Æ /api/auth/login
+#20 720.9 Γö£ ╞Æ /api/auth/logout
+#20 720.9 Γö£ ╞Æ /api/auth/mfa/disable
+#20 720.9 Γö£ ╞Æ /api/auth/mfa/enable
+#20 720.9 Γö£ ╞Æ /api/auth/mfa/setup
+#20 720.9 Γö£ ╞Æ /api/auth/mfa/status
+#20 720.9 Γö£ ╞Æ /api/auth/mfa/verify
+#20 720.9 Γö£ ╞Æ /api/auth/oidc/callback
+#20 720.9 Γö£ ╞Æ /api/auth/oidc/login
+#20 720.9 Γö£ ╞Æ /api/auth/sso/config
+#20 720.9 Γö£ ╞Æ /api/auth/status
+#20 720.9 Γö£ ╞Æ /api/batches
+#20 720.9 Γö£ ╞Æ /api/batches/[id]
+#20 720.9 Γö£ ╞Æ /api/cache
+#20 720.9 Γö£ ╞Æ /api/cache/entries
+#20 720.9 Γö£ ╞Æ /api/cache/reasoning
+#20 720.9 Γö£ ╞Æ /api/cache/stats
+#20 720.9 Γö£ ╞Æ /api/chaos/config
+#20 720.9 Γö£ ╞Æ /api/chaos/run
+#20 720.9 Γö£ ╞Æ /api/cli-tools/all-statuses
+#20 720.9 Γö£ ╞Æ /api/cli-tools/antigravity-mitm
+#20 720.9 Γö£ ╞Æ /api/cli-tools/antigravity-mitm/alias
+#20 720.9 Γö£ ╞Æ /api/cli-tools/apply
+#20 720.9 Γö£ ╞Æ /api/cli-tools/backups
+#20 720.9 Γö£ ╞Æ /api/cli-tools/claude-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/cline-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/codewhale-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/codex-profiles
+#20 720.9 Γö£ ╞Æ /api/cli-tools/codex-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/config
+#20 720.9 Γö£ ╞Æ /api/cli-tools/crush-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/deepseek-tui-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/detect
+#20 720.9 Γö£ ╞Æ /api/cli-tools/droid-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/forge-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/grok-build-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/guide-settings/[toolId]
+#20 720.9 Γö£ ╞Æ /api/cli-tools/hermes-agent-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/jcode-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/keys
+#20 720.9 Γö£ ╞Æ /api/cli-tools/kilo-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/letta-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/logs
+#20 720.9 Γö£ ╞Æ /api/cli-tools/omp-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/openclaw-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/openclaw/auto-order
+#20 720.9 Γö£ ╞Æ /api/cli-tools/pi-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/qwen-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/runtime/[toolId]
+#20 720.9 Γö£ ╞Æ /api/cli-tools/smelt-settings
+#20 720.9 Γö£ ╞Æ /api/cli-tools/status
+#20 720.9 Γö£ ╞Æ /api/cli-tools/whycodes-settings
+#20 720.9 Γö£ ╞Æ /api/cli/connect
+#20 720.9 Γö£ ╞Æ /api/cli/tokens
+#20 720.9 Γö£ ╞Æ /api/cli/tokens/[id]
+#20 720.9 Γö£ ╞Æ /api/cli/whoami
+#20 720.9 Γö£ ╞Æ /api/cloud/auth
+#20 720.9 Γö£ ╞Æ /api/cloud/credentials/update
+#20 720.9 Γö£ ╞Æ /api/cloud/model/resolve
+#20 720.9 Γö£ ╞Æ /api/cloud/models/alias
+#20 720.9 Γö£ ╞Æ /api/codex/connect/[token]
+#20 720.9 Γö£ ╞Æ /api/combos
+#20 720.9 Γö£ ╞Æ /api/combos/[id]
+#20 720.9 Γö£ ╞Æ /api/combos/auto
+#20 720.9 Γö£ ╞Æ /api/combos/builder/options
+#20 720.9 Γö£ ╞Æ /api/combos/duplicate
+#20 720.9 Γö£ ╞Æ /api/combos/export
+#20 720.9 Γö£ ╞Æ /api/combos/import
+#20 720.9 Γö£ ╞Æ /api/combos/metrics
+#20 720.9 Γö£ ╞Æ /api/combos/reorder
+#20 720.9 Γö£ ╞Æ /api/combos/test
+#20 720.9 Γö£ ╞Æ /api/compliance/audit-log
+#20 720.9 Γö£ ╞Æ /api/compression/compare
+#20 720.9 Γö£ ╞Æ /api/compression/compare/verify
+#20 720.9 Γö£ ╞Æ /api/compression/engines
+#20 720.9 Γö£ ╞Æ /api/compression/language-packs
+#20 720.9 Γö£ ╞Æ /api/compression/preview
+#20 720.9 Γö£ ╞Æ /api/compression/retrieve
+#20 720.9 Γö£ ╞Æ /api/compression/rules
+#20 720.9 Γö£ ╞Æ /api/conductor/ask
+#20 720.9 Γö£ ╞Æ /api/conductor/fleet
+#20 720.9 Γö£ ╞Æ /api/conductor/tasks
+#20 720.9 Γö£ ╞Æ /api/conductor/tasks/[id]
+#20 720.9 Γö£ ╞Æ /api/conductor/tasks/[id]/cancel
+#20 720.9 Γö£ ╞Æ /api/context/analytics
+#20 720.9 Γö£ ╞Æ /api/context/analytics/engine
+#20 720.9 Γö£ ╞Æ /api/context/caveman/config
+#20 720.9 Γö£ ╞Æ /api/context/combos
+#20 720.9 Γö£ ╞Æ /api/context/combos/[id]
+#20 720.9 Γö£ ╞Æ /api/context/combos/[id]/assignments
+#20 720.9 Γö£ ╞Æ /api/context/combos/default
+#20 720.9 Γö£ ╞Æ /api/context/rtk/config
+#20 720.9 Γö£ ╞Æ /api/context/rtk/discover
+#20 720.9 Γö£ ╞Æ /api/context/rtk/filters
+#20 720.9 Γö£ ╞Æ /api/context/rtk/import
+#20 720.9 Γö£ ╞Æ /api/context/rtk/learn
+#20 720.9 Γö£ ╞Æ /api/context/rtk/raw-output/[id]
+#20 720.9 Γö£ ╞Æ /api/context/rtk/test
+#20 720.9 Γö£ ╞Æ /api/conversations
+#20 720.9 Γö£ ╞Æ /api/conversations/[id]
+#20 720.9 Γö£ ╞Æ /api/conversations/[id]/tree
+#20 720.9 Γö£ ╞Æ /api/copilot/chat
+#20 720.9 Γö£ ╞Æ /api/cursor-cli/[...path]
+#20 720.9 Γö£ ╞Æ /api/dahl/tokens
+#20 720.9 Γö£ ╞Æ /api/db-backups
+#20 720.9 Γö£ ╞Æ /api/db-backups/export
+#20 720.9 Γö£ ╞Æ /api/db-backups/exportAll
+#20 720.9 Γö£ ╞Æ /api/db-backups/import
+#20 720.9 Γö£ ╞Æ /api/db/health
+#20 720.9 Γö£ ╞Æ /api/discovery/results
+#20 720.9 Γö£ ╞Æ /api/discovery/results/[id]
+#20 720.9 Γö£ ╞Æ /api/discovery/scan
+#20 720.9 Γö£ ╞Æ /api/discovery/verify/[id]
+#20 720.9 Γö£ Γùï /api/docs
+#20 720.9 Γö£ ╞Æ /api/docs/codex-cli
+#20 720.9 Γö£ ╞Æ /api/evals
+#20 720.9 Γö£ ╞Æ /api/evals/[suiteId]
+#20 720.9 Γö£ ╞Æ /api/evals/suites
+#20 720.9 Γö£ ╞Æ /api/evals/suites/[suiteId]
+#20 720.9 Γö£ ╞Æ /api/fallback/chains
+#20 720.9 Γö£ ╞Æ /api/files
+#20 720.9 Γö£ ╞Æ /api/files/[id]/content
+#20 720.9 Γö£ ╞Æ /api/free-models
+#20 720.9 Γö£ ╞Æ /api/free-provider-rankings
+#20 720.9 Γö£ ╞Æ /api/free-tier/summary
+#20 720.9 Γö£ ╞Æ /api/gamification/anomalies
+#20 720.9 Γö£ ╞Æ /api/gamification/badges
+#20 720.9 Γö£ ╞Æ /api/gamification/badges/earned
+#20 720.9 Γö£ ╞Æ /api/gamification/federation/leaderboard
+#20 720.9 Γö£ ╞Æ /api/gamification/federation/score
+#20 720.9 Γö£ ╞Æ /api/gamification/invite
+#20 720.9 Γö£ ╞Æ /api/gamification/invite/redeem
+#20 720.9 Γö£ ╞Æ /api/gamification/leaderboard
+#20 720.9 Γö£ ╞Æ /api/gamification/level
+#20 720.9 Γö£ ╞Æ /api/gamification/notifications
+#20 720.9 Γö£ ╞Æ /api/gamification/rotate
+#20 720.9 Γö£ ╞Æ /api/gamification/servers
+#20 720.9 Γö£ ╞Æ /api/gamification/stream
+#20 720.9 Γö£ ╞Æ /api/gamification/transfer
+#20 720.9 Γö£ ╞Æ /api/github-skills
+#20 720.9 Γö£ ╞Æ /api/guardrails
+#20 720.9 Γö£ ╞Æ /api/guardrails/test
+#20 720.9 Γö£ ╞Æ /api/headroom/start
+#20 720.9 Γö£ ╞Æ /api/headroom/status
+#20 720.9 Γö£ ╞Æ /api/headroom/stop
+#20 720.9 Γö£ ╞Æ /api/health
+#20 720.9 Γö£ ╞Æ /api/health/degradation
+#20 720.9 Γö£ ╞Æ /api/health/ping
+#20 720.9 Γö£ ╞Æ /api/init
+#20 720.9 Γö£ ╞Æ /api/integrations/combos
+#20 720.9 Γö£ ╞Æ /api/integrations/keys
+#20 720.9 Γö£ ╞Æ /api/integrations/keys/[id]
+#20 720.9 Γö£ ╞Æ /api/integrations/keys/[id]/status
+#20 720.9 Γö£ ╞Æ /api/integrations/keys/sync
+#20 720.9 Γö£ ╞Æ /api/integrations/providers
+#20 720.9 Γö£ ╞Æ /api/integrations/providers/[connectionId]/status
+#20 720.9 Γö£ ╞Æ /api/integrations/providers/quota
+#20 720.9 Γö£ ╞Æ /api/integrations/providers/with-models
+#20 720.9 Γö£ ╞Æ /api/intelligence/overrides
+#20 720.9 Γö£ ╞Æ /api/intelligence/sync
+#20 720.9 Γö£ ╞Æ /api/internal/codex-responses-ws
+#20 720.9 Γö£ ╞Æ /api/issue-agent/runs
+#20 720.9 Γö£ ╞Æ /api/jobs
+#20 720.9 Γö£ ╞Æ /api/jobs/[id]/disable
+#20 720.9 Γö£ ╞Æ /api/jobs/[id]/enable
+#20 720.9 Γö£ ╞Æ /api/jobs/[id]/run-now
+#20 720.9 Γö£ ╞Æ /api/jobs/[id]/runs
+#20 720.9 Γö£ ╞Æ /api/key-templates
+#20 720.9 Γö£ ╞Æ /api/key-templates/[id]
+#20 720.9 Γö£ ╞Æ /api/keys
+#20 720.9 Γö£ ╞Æ /api/keys/[id]
+#20 720.9 Γö£ ╞Æ /api/keys/[id]/access
+#20 720.9 Γö£ ╞Æ /api/keys/[id]/devices
+#20 720.9 Γö£ ╞Æ /api/keys/[id]/regenerate
+#20 720.9 Γö£ ╞Æ /api/keys/[id]/reveal
+#20 720.9 Γö£ ╞Æ /api/keys/[id]/self-service
+#20 720.9 Γö£ ╞Æ /api/keys/[id]/template-policy
+#20 720.9 Γö£ ╞Æ /api/keys/[id]/usage-limits
+#20 720.9 Γö£ ╞Æ /api/keys/groups
+#20 720.9 Γö£ ╞Æ /api/keys/groups/[id]
+#20 720.9 Γö£ ╞Æ /api/keys/groups/[id]/keys
+#20 720.9 Γö£ ╞Æ /api/keys/groups/[id]/permissions
+#20 720.9 Γö£ ╞Æ /api/keys/import
+#20 720.9 Γö£ ╞Æ /api/local/redis/start
+#20 720.9 Γö£ ╞Æ /api/local/redis/status
+#20 720.9 Γö£ ╞Æ /api/local/redis/stop
+#20 720.9 Γö£ ╞Æ /api/log-export/destinations
+#20 720.9 Γö£ ╞Æ /api/log-export/destinations/[id]
+#20 720.9 Γö£ ╞Æ /api/log-export/destinations/[id]/run
+#20 720.9 Γö£ ╞Æ /api/log-export/destinations/[id]/test
+#20 720.9 Γö£ ╞Æ /api/log-export/status
+#20 720.9 Γö£ ╞Æ /api/log-export/types
+#20 720.9 Γö£ ╞Æ /api/logs/[id]
+#20 720.9 Γö£ ╞Æ /api/logs/console
+#20 720.9 Γö£ ╞Æ /api/logs/detail
+#20 720.9 Γö£ ╞Æ /api/logs/export
+#20 720.9 Γö£ ╞Æ /api/mcp/audit
+#20 720.9 Γö£ ╞Æ /api/mcp/audit/stats
+#20 720.9 Γö£ ╞Æ /api/mcp/restart
+#20 720.9 Γö£ ╞Æ /api/mcp/sse
+#20 720.9 Γö£ ╞Æ /api/mcp/status
+#20 720.9 Γö£ ╞Æ /api/mcp/stream
+#20 720.9 Γö£ ╞Æ /api/mcp/tools
+#20 720.9 Γö£ ╞Æ /api/memory
+#20 720.9 Γö£ ╞Æ /api/memory/[id]
+#20 720.9 Γö£ ╞Æ /api/memory/embedding-providers
+#20 720.9 Γö£ ╞Æ /api/memory/engine-status
+#20 720.9 Γö£ ╞Æ /api/memory/health
+#20 720.9 Γö£ ╞Æ /api/memory/reindex
+#20 720.9 Γö£ ╞Æ /api/memory/rerank-providers
+#20 720.9 Γö£ ╞Æ /api/memory/retrieve-preview
+#20 720.9 Γö£ ╞Æ /api/memory/summarize
+#20 720.9 Γö£ ╞Æ /api/middleware/hooks
+#20 720.9 Γö£ ╞Æ /api/middleware/hooks/[name]
+#20 720.9 Γö£ ╞Æ /api/modality-bridge/stats
+#20 720.9 Γö£ ╞Æ /api/modality-bridge/video/drilldown
+#20 720.9 Γö£ ╞Æ /api/modality-bridge/video/extract
+#20 720.9 Γö£ ╞Æ /api/modality-bridge/video/runtime
+#20 720.9 Γö£ ╞Æ /api/model-capability-overrides
+#20 720.9 Γö£ ╞Æ /api/model-combo-mappings
+#20 720.9 Γö£ ╞Æ /api/model-combo-mappings/[id]
+#20 720.9 Γö£ ╞Æ /api/models
+#20 720.9 Γö£ ╞Æ /api/models/alias
+#20 720.9 Γö£ ╞Æ /api/models/catalog
+#20 720.9 Γö£ ╞Æ /api/models/new
+#20 720.9 Γö£ ╞Æ /api/models/new/acknowledge
+#20 720.9 Γö£ ╞Æ /api/models/openrouter-catalog
+#20 720.9 Γö£ ╞Æ /api/models/test
+#20 720.9 Γö£ ╞Æ /api/models/test-all
+#20 720.9 Γö£ ╞Æ /api/monitoring/compression
+#20 720.9 Γö£ ╞Æ /api/monitoring/health
+#20 720.9 Γö£ ╞Æ /api/monitoring/model-health
+#20 720.9 Γö£ ╞Æ /api/network/info
+#20 720.9 Γö£ ╞Æ /api/oauth/[provider]/[action]
+#20 720.9 Γö£ ╞Æ /api/oauth/[provider]/import-export
+#20 720.9 Γö£ ╞Æ /api/oauth/[provider]/paste-credentials
+#20 720.9 Γö£ ╞Æ /api/oauth/chatgpt/session
+#20 720.9 Γö£ ╞Æ /api/oauth/cliproxy-import
+#20 720.9 Γö£ ╞Æ /api/oauth/codex/import
+#20 720.9 Γö£ ╞Æ /api/oauth/codex/import-token
+#20 720.9 Γö£ ╞Æ /api/oauth/cursor/auto-import
+#20 720.9 Γö£ ╞Æ /api/oauth/cursor/import
+#20 720.9 Γö£ ╞Æ /api/oauth/cursor/login/cancel
+#20 720.9 Γö£ ╞Æ /api/oauth/cursor/login/poll
+#20 720.9 Γö£ ╞Æ /api/oauth/cursor/login/start
+#20 720.9 Γö£ ╞Æ /api/oauth/kiro/api-key
+#20 720.9 Γö£ ╞Æ /api/oauth/kiro/auto-import
+#20 720.9 Γö£ ╞Æ /api/oauth/kiro/import
+#20 720.9 Γö£ ╞Æ /api/oauth/kiro/social-authorize
+#20 720.9 Γö£ ╞Æ /api/oauth/kiro/social-exchange
+#20 720.9 Γö£ ╞Æ /api/oauth/trae/authorize-state
+#20 720.9 Γö£ ╞Æ /api/oauth/trae/import
+#20 720.9 Γö£ ╞Æ /api/omniroute/route/preview
+#20 720.9 Γö£ ╞Æ /api/omniroute/status
+#20 720.9 Γö£ ╞Æ /api/openapi/spec
+#20 720.9 Γö£ ╞Æ /api/openapi/try
+#20 720.9 Γö£ ╞Æ /api/playground/improve-prompt
+#20 720.9 Γö£ ╞Æ /api/playground/presets
+#20 720.9 Γö£ ╞Æ /api/playground/presets/[id]
+#20 720.9 Γö£ ╞Æ /api/playground/simulate-route
+#20 720.9 Γö£ ╞Æ /api/plugins
+#20 720.9 Γö£ ╞Æ /api/plugins/[name]
+#20 720.9 Γö£ ╞Æ /api/plugins/[name]/activate
+#20 720.9 Γö£ ╞Æ /api/plugins/[name]/config
+#20 720.9 Γö£ ╞Æ /api/plugins/[name]/deactivate
+#20 720.9 Γö£ ╞Æ /api/plugins/marketplace
+#20 720.9 Γö£ ╞Æ /api/plugins/marketplace/install
+#20 720.9 Γö£ ╞Æ /api/plugins/scan
+#20 720.9 Γö£ ╞Æ /api/policies
+#20 720.9 Γö£ ╞Æ /api/pricing
+#20 720.9 Γö£ ╞Æ /api/pricing/defaults
+#20 720.9 Γö£ ╞Æ /api/pricing/models
+#20 720.9 Γö£ ╞Æ /api/pricing/sync
+#20 720.9 Γö£ ╞Æ /api/pricing/unpriced-usage
+#20 720.9 Γö£ ╞Æ /api/provider-metrics
+#20 720.9 Γö£ ╞Æ /api/provider-models
+#20 720.9 Γö£ ╞Æ /api/provider-models/validate-and-add
+#20 720.9 Γö£ ╞Æ /api/provider-nodes
+#20 720.9 Γö£ ╞Æ /api/provider-nodes/[id]
+#20 720.9 Γö£ ╞Æ /api/provider-nodes/validate
+#20 720.9 Γö£ ╞Æ /api/provider-stats
+#20 720.9 Γö£ ╞Æ /api/providers
+#20 720.9 Γö£ ╞Æ /api/providers/[id]
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/cc-alias
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/chatgpt-web-codex-doctor
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/claude-auth/apply-local
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/claude-auth/export
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/codex-auth/apply-local
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/codex-auth/export
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/fal
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/interception-rules
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/login
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/models
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/param-filters
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/ping
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/refresh
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/refresh-cursor
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/refresh-token
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/sync-models
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/test
+#20 720.9 Γö£ ╞Æ /api/providers/[id]/test-message
+#20 720.9 Γö£ ╞Æ /api/providers/agy-auth/apply-local
+#20 720.9 Γö£ ╞Æ /api/providers/agy-auth/import
+#20 720.9 Γö£ ╞Æ /api/providers/agy-auth/import-bulk
+#20 720.9 Γö£ ╞Æ /api/providers/agy-auth/zip-extract
+#20 720.9 Γö£ ╞Æ /api/providers/bulk
+#20 720.9 Γö£ ╞Æ /api/providers/bulk-web-session
+#20 720.9 Γö£ ╞Æ /api/providers/claude-auth/import
+#20 720.9 Γö£ ╞Æ /api/providers/claude-auth/import-bulk
+#20 720.9 Γö£ ╞Æ /api/providers/claude-auth/zip-extract
+#20 720.9 Γö£ ╞Æ /api/providers/client
+#20 720.9 Γö£ ╞Æ /api/providers/codex-auth/import
+#20 720.9 Γö£ ╞Æ /api/providers/codex-auth/import-bulk
+#20 720.9 Γö£ ╞Æ /api/providers/codex-auth/zip-extract
+#20 720.9 Γö£ ╞Æ /api/providers/codex-cooldown
+#20 720.9 Γö£ ╞Æ /api/providers/command-code/auth/apply
+#20 720.9 Γö£ ╞Æ /api/providers/command-code/auth/callback
+#20 720.9 Γö£ ╞Æ /api/providers/command-code/auth/start
+#20 720.9 Γö£ ╞Æ /api/providers/command-code/auth/status
+#20 720.9 Γö£ ╞Æ /api/providers/cursor/agent-availability
+#20 720.9 Γö£ ╞Æ /api/providers/deprecated
+#20 720.9 Γö£ ╞Æ /api/providers/devin-cli-agentic/auth-status
+#20 720.9 Γö£ ╞Æ /api/providers/expiration
+#20 720.9 Γö£ ╞Æ /api/providers/free-onboarding
+#20 720.9 Γö£ ╞Æ /api/providers/health-autopilot
+#20 720.9 Γö£ ╞Æ /api/providers/health-autopilot/actions
+#20 720.9 Γö£ ╞Æ /api/providers/health-matrix
+#20 720.9 Γö£ ╞Æ /api/providers/import
+#20 720.9 Γö£ ╞Æ /api/providers/openrouter-stats
+#20 720.9 Γö£ ╞Æ /api/providers/quota-windows
+#20 720.9 Γö£ ╞Æ /api/providers/test-batch
+#20 720.9 Γö£ ╞Æ /api/providers/validate
+#20 720.9 Γö£ ╞Æ /api/providers/volcengine-plan/connect
+#20 720.9 Γö£ ╞Æ /api/providers/volcengine-plan/connect/[sessionId]/cancel
+#20 720.9 Γö£ ╞Æ /api/providers/volcengine-plan/connect/[sessionId]/code
+#20 720.9 Γö£ ╞Æ /api/providers/volcengine-plan/connect/[sessionId]/identity
+#20 720.9 Γö£ ╞Æ /api/providers/volcengine-plan/connect/[sessionId]/resend
+#20 720.9 Γö£ ╞Æ /api/providers/volcengine-plan/connect/[sessionId]/status
+#20 720.9 Γö£ ╞Æ /api/providers/web-session-contract
+#20 720.9 Γö£ ╞Æ /api/providers/zed/discover
+#20 720.9 Γö£ ╞Æ /api/providers/zed/import
+#20 720.9 Γö£ ╞Æ /api/providers/zed/manual-import
+#20 720.9 Γö£ ╞Æ /api/proxy-fallback/test
+#20 720.9 Γö£ ╞Æ /api/quota/groups
+#20 720.9 Γö£ ╞Æ /api/quota/groups/[id]
+#20 720.9 Γö£ ╞Æ /api/quota/keys/[id]/models
+#20 720.9 Γö£ ╞Æ /api/quota/plans
+#20 720.9 Γö£ ╞Æ /api/quota/plans/[connectionId]
+#20 720.9 Γö£ ╞Æ /api/quota/pools
+#20 720.9 Γö£ ╞Æ /api/quota/pools/[id]
+#20 720.9 Γö£ ╞Æ /api/quota/pools/[id]/log
+#20 720.9 Γö£ ╞Æ /api/quota/pools/[id]/schedules
+#20 720.9 Γö£ ╞Æ /api/quota/pools/[id]/usage
+#20 720.9 Γö£ ╞Æ /api/quota/preview
+#20 720.9 Γö£ ╞Æ /api/radar/catalog
+#20 720.9 Γö£ ╞Æ /api/radar/intel
+#20 720.9 Γö£ ╞Æ /api/radar/intel/sync
+#20 720.9 Γö£ ╞Æ /api/radar/local-model-state
+#20 720.9 Γö£ ╞Æ /api/radar/offers
+#20 720.9 Γö£ ╞Æ /api/radar/offers/sync
+#20 720.9 Γö£ ╞Æ /api/radar/referrals
+#20 720.9 Γö£ ╞Æ /api/radar/settings
+#20 720.9 Γö£ ╞Æ /api/radar/status
+#20 720.9 Γö£ ╞Æ /api/radar/sync
+#20 720.9 Γö£ ╞Æ /api/radar/sync-all
+#20 720.9 Γö£ ╞Æ /api/rate-limit
+#20 720.9 Γö£ ╞Æ /api/rate-limits
+#20 720.9 Γö£ ╞Æ /api/relay/tokens
+#20 720.9 Γö£ ╞Æ /api/relay/tokens/[id]
+#20 720.9 Γö£ ╞Æ /api/resilience
+#20 720.9 Γö£ ╞Æ /api/resilience/connections
+#20 720.9 Γö£ ╞Æ /api/resilience/cooldowns
+#20 720.9 Γö£ ╞Æ /api/resilience/model-cooldowns
+#20 720.9 Γö£ ╞Æ /api/resilience/reset
+#20 720.9 Γö£ ╞Æ /api/restart
+#20 720.9 Γö£ ╞Æ /api/routing/decisions/[requestId]
+#20 720.9 Γö£ ╞Æ /api/search/providers
+#20 720.9 Γö£ ╞Æ /api/search/stats
+#20 720.9 Γö£ ╞Æ /api/services/[name]/logs
+#20 720.9 Γö£ ╞Æ /api/services/9router/auto-restart-adopted
+#20 720.9 Γö£ ╞Æ /api/services/9router/auto-start
+#20 720.9 Γö£ ╞Æ /api/services/9router/install
+#20 720.9 Γö£ ╞Æ /api/services/9router/models
+#20 720.9 Γö£ ╞Æ /api/services/9router/provider-expose
+#20 720.9 Γö£ ╞Æ /api/services/9router/restart
+#20 720.9 Γö£ ╞Æ /api/services/9router/rotate-key
+#20 720.9 Γö£ ╞Æ /api/services/9router/start
+#20 720.9 Γö£ ╞Æ /api/services/9router/status
+#20 720.9 Γö£ ╞Æ /api/services/9router/stop
+#20 720.9 Γö£ ╞Æ /api/services/9router/update
+#20 720.9 Γö£ ╞Æ /api/services/bifrost/auto-restart-adopted
+#20 720.9 Γö£ ╞Æ /api/services/bifrost/auto-start
+#20 720.9 Γö£ ╞Æ /api/services/bifrost/install
+#20 720.9 Γö£ ╞Æ /api/services/bifrost/restart
+#20 720.9 Γö£ ╞Æ /api/services/bifrost/start
+#20 720.9 Γö£ ╞Æ /api/services/bifrost/status
+#20 720.9 Γö£ ╞Æ /api/services/bifrost/stop
+#20 720.9 Γö£ ╞Æ /api/services/bifrost/update
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/accounts
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/auto-restart-adopted
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/auto-start
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/install
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/provider-expose
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/restart
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/start
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/status
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/stop
+#20 720.9 Γö£ ╞Æ /api/services/cliproxy/update
+#20 720.9 Γö£ ╞Æ /api/services/dario/admin/accounts
+#20 720.9 Γö£ ╞Æ /api/services/dario/admin/import-from-omniroute
+#20 720.9 Γö£ ╞Æ /api/services/dario/admin/login-complete
+#20 720.9 Γö£ ╞Æ /api/services/dario/admin/login-start
+#20 720.9 Γö£ ╞Æ /api/services/dario/auto-restart-adopted
+#20 720.9 Γö£ ╞Æ /api/services/dario/auto-start
+#20 720.9 Γö£ ╞Æ /api/services/dario/install
+#20 720.9 Γö£ ╞Æ /api/services/dario/restart
+#20 720.9 Γö£ ╞Æ /api/services/dario/start
+#20 720.9 Γö£ ╞Æ /api/services/dario/status
+#20 720.9 Γö£ ╞Æ /api/services/dario/stop
+#20 720.9 Γö£ ╞Æ /api/services/dario/update
+#20 720.9 Γö£ ╞Æ /api/services/llmlingua/auto-restart-adopted
+#20 720.9 Γö£ ╞Æ /api/services/llmlingua/auto-start
+#20 720.9 Γö£ ╞Æ /api/services/llmlingua/install
+#20 720.9 Γö£ ╞Æ /api/services/llmlingua/restart
+#20 720.9 Γö£ ╞Æ /api/services/llmlingua/start
+#20 720.9 Γö£ ╞Æ /api/services/llmlingua/status
+#20 720.9 Γö£ ╞Æ /api/services/llmlingua/stop
+#20 720.9 Γö£ ╞Æ /api/services/llmlingua/update
+#20 720.9 Γö£ ╞Æ /api/services/mux/auto-restart-adopted
+#20 720.9 Γö£ ╞Æ /api/services/mux/auto-start
+#20 720.9 Γö£ ╞Æ /api/services/mux/install
+#20 720.9 Γö£ ╞Æ /api/services/mux/restart
+#20 720.9 Γö£ ╞Æ /api/services/mux/start
+#20 720.9 Γö£ ╞Æ /api/services/mux/status
+#20 720.9 Γö£ ╞Æ /api/services/mux/stop
+#20 720.9 Γö£ ╞Æ /api/services/mux/update
+#20 720.9 Γö£ ╞Æ /api/services/opencode-server/start
+#20 720.9 Γö£ ╞Æ /api/services/opencode-server/status
+#20 720.9 Γö£ ╞Æ /api/services/opencode-server/stop
+#20 720.9 Γö£ ╞Æ /api/services/openwa/auto-restart-adopted
+#20 720.9 Γö£ ╞Æ /api/services/openwa/auto-start
+#20 720.9 Γö£ ╞Æ /api/services/openwa/install
+#20 720.9 Γö£ ╞Æ /api/services/openwa/restart
+#20 720.9 Γö£ ╞Æ /api/services/openwa/start
+#20 720.9 Γö£ ╞Æ /api/services/openwa/status
+#20 720.9 Γö£ ╞Æ /api/services/openwa/stop
+#20 720.9 Γö£ ╞Æ /api/services/openwa/update
+#20 720.9 Γö£ ╞Æ /api/services/singbox/auto-restart-adopted
+#20 720.9 Γö£ ╞Æ /api/services/singbox/auto-start
+#20 720.9 Γö£ ╞Æ /api/services/singbox/install
+#20 720.9 Γö£ ╞Æ /api/services/singbox/restart
+#20 720.9 Γö£ ╞Æ /api/services/singbox/start
+#20 720.9 Γö£ ╞Æ /api/services/singbox/status
+#20 720.9 Γö£ ╞Æ /api/services/singbox/stop
+#20 720.9 Γö£ ╞Æ /api/services/singbox/update
+#20 720.9 Γö£ ╞Æ /api/session-pools
+#20 720.9 Γö£ ╞Æ /api/session-pools/[provider]
+#20 720.9 Γö£ ╞Æ /api/sessions
+#20 720.9 Γö£ ╞Æ /api/settings
+#20 720.9 Γö£ ╞Æ /api/settings/authz-inventory
+#20 720.9 Γö£ ╞Æ /api/settings/auto-disable-accounts
+#20 720.9 Γö£ ╞Æ /api/settings/background-degradation
+#20 720.9 Γö£ ╞Æ /api/settings/banked-reset-auto/history
+#20 720.9 Γö£ ╞Æ /api/settings/cache-config
+#20 720.9 Γö£ ╞Æ /api/settings/cache-config/embedding-options
+#20 720.9 Γö£ ╞Æ /api/settings/cache-config/test-embedding
+#20 720.9 Γö£ ╞Æ /api/settings/cache-metrics
+#20 720.9 Γö£ ╞Æ /api/settings/cc-discovery-metrics
+#20 720.9 Γö£ ╞Æ /api/settings/cli-versions
+#20 720.9 Γö£ ╞Æ /api/settings/codex-wakeups
+#20 720.9 Γö£ ╞Æ /api/settings/combo-defaults
+#20 720.9 Γö£ ╞Æ /api/settings/compression
+#20 720.9 Γö£ ╞Æ /api/settings/compression/mcp-accessibility
+#20 720.9 Γö£ ╞Æ /api/settings/compression/rules
+#20 720.9 Γö£ ╞Æ /api/settings/compression/run-telemetry
+#20 720.9 Γö£ ╞Æ /api/settings/database
+#20 720.9 Γö£ ╞Æ /api/settings/database/integrity-check
+#20 720.9 Γö£ ╞Æ /api/settings/database/refresh-stats
+#20 720.9 Γö£ ╞Æ /api/settings/database/vacuum
+#20 720.9 Γö£ ╞Æ /api/settings/export-json
+#20 720.9 Γö£ ╞Æ /api/settings/favicon
+#20 720.9 Γö£ ╞Æ /api/settings/feature-flags
+#20 720.9 Γö£ ╞Æ /api/settings/free-proxies
+#20 720.9 Γö£ ╞Æ /api/settings/free-proxies/[id]/add-to-pool
+#20 720.9 Γö£ ╞Æ /api/settings/free-proxies/bulk-add-to-pool
+#20 720.9 Γö£ ╞Æ /api/settings/free-proxies/stats
+#20 720.9 Γö£ ╞Æ /api/settings/free-proxies/sync
+#20 720.9 Γö£ ╞Æ /api/settings/import-json
+#20 720.9 Γö£ ╞Æ /api/settings/ip-filter
+#20 720.9 Γö£ ╞Æ /api/settings/lkgp-cache
+#20 720.9 Γö£ ╞Æ /api/settings/local-corpus
+#20 720.9 Γö£ ╞Æ /api/settings/memory
+#20 720.9 Γö£ ╞Æ /api/settings/mitm
+#20 720.9 Γö£ ╞Æ /api/settings/model-aliases
+#20 720.9 Γö£ ╞Æ /api/settings/models-dev
+#20 720.9 Γö£ ╞Æ /api/settings/notion
+#20 720.9 Γö£ ╞Æ /api/settings/obsidian
+#20 720.9 Γö£ ╞Æ /api/settings/obsidian/webdav
+#20 720.9 Γö£ ╞Æ /api/settings/oneproxy
+#20 720.9 Γö£ ╞Æ /api/settings/oneproxy/rotate
+#20 720.9 Γö£ ╞Æ /api/settings/payload-rules
+#20 720.9 Γö£ ╞Æ /api/settings/pii
+#20 720.9 Γö£ ╞Æ /api/settings/pii/test
+#20 720.9 Γö£ ╞Æ /api/settings/proxies
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/[id]/repair-relay
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/assignments
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/auto-test
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/batch-activate
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/batch-delete
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/bulk-assign
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/bulk-import
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/egress
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/health
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/migrate
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/operator-egress
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/pool
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/pool/egress-observation
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/pool/member-egress
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/pool/uniform-egress
+#20 720.9 Γö£ ╞Æ /api/settings/proxies/traffic
+#20 720.9 Γö£ ╞Æ /api/settings/proxy
+#20 720.9 Γö£ ╞Æ /api/settings/proxy/cloudflare-deploy
+#20 720.9 Γö£ ╞Æ /api/settings/proxy/deno-deploy
+#20 720.9 Γö£ ╞Æ /api/settings/proxy/test
+#20 720.9 Γö£ ╞Æ /api/settings/proxy/vercel-deploy
+#20 720.9 Γö£ ╞Æ /api/settings/purge-call-logs
+#20 720.9 Γö£ ╞Æ /api/settings/purge-detailed-logs
+#20 720.9 Γö£ ╞Æ /api/settings/purge-logs
+#20 720.9 Γö£ ╞Æ /api/settings/purge-quota-snapshots
+#20 720.9 Γö£ ╞Æ /api/settings/purge-request-history
+#20 720.9 Γö£ ╞Æ /api/settings/purge-usage-history
+#20 720.9 Γö£ ╞Æ /api/settings/qdrant
+#20 720.9 Γö£ ╞Æ /api/settings/qdrant/cleanup
+#20 720.9 Γö£ ╞Æ /api/settings/qdrant/embedding-models
+#20 720.9 Γö£ ╞Æ /api/settings/qdrant/health
+#20 720.9 Γö£ ╞Æ /api/settings/qdrant/search
+#20 720.9 Γö£ ╞Æ /api/settings/quota-store
+#20 720.9 Γö£ ╞Æ /api/settings/quota/state
+#20 720.9 Γö£ ╞Æ /api/settings/reasoning-routing-rules
+#20 720.9 Γö£ ╞Æ /api/settings/reasoning-routing-rules/[id]
+#20 720.9 Γö£ ╞Æ /api/settings/reasoning-routing-rules/simulate
+#20 720.9 Γö£ ╞Æ /api/settings/require-login
+#20 720.9 Γö£ ╞Æ /api/settings/system-prompt
+#20 720.9 Γö£ ╞Æ /api/settings/task-routing
+#20 720.9 Γö£ ╞Æ /api/settings/thinking-budget
+#20 720.9 Γö£ ╞Æ /api/settings/tier-config
+#20 720.9 Γö£ ╞Æ /api/settings/transfer/catalog
+#20 720.9 Γö£ ╞Æ /api/settings/transfer/export
+#20 720.9 Γö£ ╞Æ /api/settings/transfer/import
+#20 720.9 Γö£ ╞Æ /api/settings/transfer/preview
+#20 720.9 Γö£ ╞Æ /api/shutdown
+#20 720.9 Γö£ ╞Æ /api/skills
+#20 720.9 Γö£ ╞Æ /api/skills/[id]
+#20 720.9 Γö£ ╞Æ /api/skills/collect/chaos
+#20 720.9 Γö£ ╞Æ /api/skills/collect/detect
+#20 720.9 Γö£ ╞Æ /api/skills/collect/install
+#20 720.9 Γö£ ╞Æ /api/skills/executions
+#20 720.9 Γö£ ╞Æ /api/skills/install
+#20 720.9 Γö£ ╞Æ /api/skills/marketplace
+#20 720.9 Γö£ ╞Æ /api/skills/marketplace/install
+#20 720.9 Γö£ ╞Æ /api/skills/skillssh
+#20 720.9 Γö£ ╞Æ /api/skills/skillssh/install
+#20 720.9 Γö£ ╞Æ /api/storage/health
+#20 720.9 Γö£ ╞Æ /api/sync/bundle
+#20 720.9 Γö£ ╞Æ /api/sync/cloud
+#20 720.9 Γö£ ╞Æ /api/sync/initialize
+#20 720.9 Γö£ ╞Æ /api/sync/tokens
+#20 720.9 Γö£ ╞Æ /api/sync/tokens/[id]
+#20 720.9 Γö£ ╞Æ /api/synced-available-models
+#20 720.9 Γö£ ╞Æ /api/system/env/repair
+#20 720.9 Γö£ ╞Æ /api/system/metrics
+#20 720.9 Γö£ ╞Æ /api/system/version
+#20 720.9 Γö£ ╞Æ /api/tags
+#20 720.9 Γö£ ╞Æ /api/teams
+#20 720.9 Γö£ ╞Æ /api/teams/[id]
+#20 720.9 Γö£ ╞Æ /api/teams/[id]/members
+#20 720.9 Γö£ ╞Æ /api/teams/[id]/usage
+#20 720.9 Γö£ ╞Æ /api/telegram/update
+#20 720.9 Γö£ ╞Æ /api/telemetry/summary
+#20 720.9 Γö£ ╞Æ /api/token-health
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/agents
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/agents/[id]
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/agents/[id]/detect
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/agents/[id]/detected-models
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/agents/[id]/dns
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/agents/[id]/mappings
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/agents/[id]/reset
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/bypass
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/cert
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/cert/download
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/cert/regenerate
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/config
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/diagnose
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/repair
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/server
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/state
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/tproxy
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/upstream-ca
+#20 720.9 Γö£ ╞Æ /api/tools/agent-bridge/upstream-ca/test
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/capture-modes
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/capture-modes/http-proxy
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/capture-modes/system-proxy
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/export.har
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/hosts
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/hosts/[host]
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/internal/ingest
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/requests
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/requests/[id]
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/requests/[id]/annotation
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/requests/[id]/replay
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/sessions
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/sessions/[id]
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/sessions/[id]/export.har
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/sessions/[id]/requests
+#20 720.9 Γö£ ╞Æ /api/tools/traffic-inspector/ws
+#20 720.9 Γö£ ╞Æ /api/translator/detect
+#20 720.9 Γö£ ╞Æ /api/translator/history
+#20 720.9 Γö£ ╞Æ /api/translator/send
+#20 720.9 Γö£ ╞Æ /api/translator/transform-stream
+#20 720.9 Γö£ ╞Æ /api/translator/translate
+#20 720.9 Γö£ ╞Æ /api/tunnels/cloudflared
+#20 720.9 Γö£ ╞Æ /api/tunnels/ngrok
+#20 720.9 Γö£ ╞Æ /api/tunnels/tailscale
+#20 720.9 Γö£ ╞Æ /api/tunnels/tailscale/check
+#20 720.9 Γö£ ╞Æ /api/tunnels/tailscale/disable
+#20 720.9 Γö£ ╞Æ /api/tunnels/tailscale/enable
+#20 720.9 Γö£ ╞Æ /api/tunnels/tailscale/install
+#20 720.9 Γö£ ╞Æ /api/tunnels/tailscale/login
+#20 720.9 Γö£ ╞Æ /api/tunnels/tailscale/start-daemon
+#20 720.9 Γö£ ╞Æ /api/upstream-proxy/[providerId]
+#20 720.9 Γö£ ╞Æ /api/usage/[connectionId]
+#20 720.9 Γö£ ╞Æ /api/usage/analytics
+#20 720.9 Γö£ ╞Æ /api/usage/availability
+#20 720.9 Γö£ ╞Æ /api/usage/budget
+#20 720.9 Γö£ ╞Æ /api/usage/budget/bulk
+#20 720.9 Γö£ ╞Æ /api/usage/by-run
+#20 720.9 Γö£ ╞Æ /api/usage/cache-health
+#20 720.9 Γö£ ╞Æ /api/usage/call-logs
+#20 720.9 Γö£ ╞Æ /api/usage/call-logs/[id]
+#20 720.9 Γö£ ╞Æ /api/usage/call-logs/filters
+#20 720.9 Γö£ ╞Æ /api/usage/codex-reset-credit
+#20 720.9 Γö£ ╞Æ /api/usage/combo-forecast
+#20 720.9 Γö£ ╞Æ /api/usage/combo-health
+#20 720.9 Γö£ ╞Æ /api/usage/combo-health-autopilot
+#20 720.9 Γö£ ╞Æ /api/usage/combo-health-dashboard
+#20 720.9 Γö£ ╞Æ /api/usage/combo-scoring-inspector
+#20 720.9 Γö£ ╞Æ /api/usage/combo-trace/[id]
+#20 720.9 Γö£ ╞Æ /api/usage/glm-reset-card
+#20 720.9 Γö£ ╞Æ /api/usage/history
+#20 720.9 Γö£ ╞Æ /api/usage/key-quota
+#20 720.9 Γö£ ╞Æ /api/usage/local-summary
+#20 720.9 Γö£ ╞Æ /api/usage/logs
+#20 720.9 Γö£ ╞Æ /api/usage/model-latency-stats
+#20 720.9 Γö£ ╞Æ /api/usage/om-usage
+#20 720.9 Γö£ ╞Æ /api/usage/provider-limits
+#20 720.9 Γö£ ╞Æ /api/usage/provider-window-costs
+#20 720.9 Γö£ ╞Æ /api/usage/proxy-logs
+#20 720.9 Γö£ ╞Æ /api/usage/quota
+#20 720.9 Γö£ ╞Æ /api/usage/request-logs
+#20 720.9 Γö£ ╞Æ /api/usage/requests-by-provider-date
+#20 720.9 Γö£ ╞Æ /api/usage/route-explain/[id]
+#20 720.9 Γö£ ╞Æ /api/usage/token-limits
+#20 720.9 Γö£ ╞Æ /api/usage/utilization
+#20 720.9 Γö£ ╞Æ /api/v0/management/api-call
+#20 720.9 Γö£ ╞Æ /api/v0/management/auth-files
+#20 720.9 Γö£ ╞Æ /api/v0/management/reset-quota
+#20 720.9 Γö£ ╞Æ /api/v1
+#20 720.9 Γö£ ╞Æ /api/v1/[...omnirouteCatchAll]
+#20 720.9 Γö£ ╞Æ /api/v1/accounts/[id]/limits
+#20 720.9 Γö£ ╞Æ /api/v1/agents/credentials
+#20 720.9 Γö£ ╞Æ /api/v1/agents/health
+#20 720.9 Γö£ ╞Æ /api/v1/agents/tasks
+#20 720.9 Γö£ ╞Æ /api/v1/agents/tasks/[id]
+#20 720.9 Γö£ ╞Æ /api/v1/alpha/search
+#20 720.9 Γö£ ╞Æ /api/v1/antigravity
+#20 720.9 Γö£ ╞Æ /api/v1/api/chat
+#20 720.9 Γö£ ╞Æ /api/v1/audio/speech
+#20 720.9 Γö£ ╞Æ /api/v1/audio/transcriptions
+#20 720.9 Γö£ ╞Æ /api/v1/audio/translations
+#20 720.9 Γö£ ╞Æ /api/v1/auto-combo/[channel]/candidates
+#20 720.9 Γö£ ╞Æ /api/v1/batches
+#20 720.9 Γö£ ╞Æ /api/v1/batches/[id]
+#20 720.9 Γö£ ╞Æ /api/v1/batches/[id]/cancel
+#20 720.9 Γö£ ╞Æ /api/v1/batches/delete-completed
+#20 720.9 Γö£ ╞Æ /api/v1/chat/completions
+#20 720.9 Γö£ ╞Æ /api/v1/classify
+#20 720.9 Γö£ ╞Æ /api/v1/combos
+#20 720.9 Γö£ ╞Æ /api/v1/completions
+#20 720.9 Γö£ ╞Æ /api/v1/embeddings
+#20 720.9 Γö£ ╞Æ /api/v1/explain/routing
+#20 720.9 Γö£ ╞Æ /api/v1/fal/jobs/[id]
+#20 720.9 Γö£ ╞Æ /api/v1/fal/models
+#20 720.9 Γö£ ╞Æ /api/v1/fal/run
+#20 720.9 Γö£ ╞Æ /api/v1/files
+#20 720.9 Γö£ ╞Æ /api/v1/files/[id]
+#20 720.9 Γö£ ╞Æ /api/v1/files/[id]/content
+#20 720.9 Γö£ ╞Æ /api/v1/images/edits
+#20 720.9 Γö£ ╞Æ /api/v1/images/generations
+#20 720.9 Γö£ ╞Æ /api/v1/images/upscale
+#20 720.9 Γö£ ╞Æ /api/v1/issues/report
+#20 720.9 Γö£ ╞Æ /api/v1/management/proxies
+#20 720.9 Γö£ ╞Æ /api/v1/management/proxies/assignments
+#20 720.9 Γö£ ╞Æ /api/v1/management/proxies/bulk-assign
+#20 720.9 Γö£ ╞Æ /api/v1/management/proxies/health
+#20 720.9 Γö£ ╞Æ /api/v1/management/proxy-subscriptions
+#20 720.9 Γö£ ╞Æ /api/v1/management/proxy-subscriptions/[id]
+#20 720.9 Γö£ ╞Æ /api/v1/management/proxy-subscriptions/[id]/nodes
+#20 720.9 Γö£ ╞Æ /api/v1/management/proxy-subscriptions/[id]/refresh
+#20 720.9 Γö£ ╞Æ /api/v1/me/sessions
+#20 720.9 Γö£ ╞Æ /api/v1/me/sessions/[id]
+#20 720.9 Γö£ ╞Æ /api/v1/me/status
+#20 720.9 Γö£ ╞Æ /api/v1/media/[id]
+#20 720.9 Γö£ ╞Æ /api/v1/messages
+#20 720.9 Γö£ ╞Æ /api/v1/messages/count_tokens
+#20 720.9 Γö£ ╞Æ /api/v1/models
+#20 720.9 Γö£ ╞Æ /api/v1/models/[...model]
+#20 720.9 Γö£ ╞Æ /api/v1/models/health
+#20 720.9 Γö£ ╞Æ /api/v1/models/query
+#20 720.9 Γö£ ╞Æ /api/v1/moderations
+#20 720.9 Γö£ ╞Æ /api/v1/multimodal-embeddings
+#20 720.9 Γö£ ╞Æ /api/v1/muse-code/models
+#20 720.9 Γö£ ╞Æ /api/v1/music
+#20 720.9 Γö£ ╞Æ /api/v1/music/detailed
+#20 720.9 Γö£ ╞Æ /api/v1/music/detailed/stream
+#20 720.9 Γö£ ╞Æ /api/v1/music/generations
+#20 720.9 Γö£ ╞Æ /api/v1/music/plan
+#20 720.9 Γö£ ╞Æ /api/v1/music/stream
+#20 720.9 Γö£ ╞Æ /api/v1/ocr
+#20 720.9 Γö£ ╞Æ /api/v1/provider-plugin-manifest
+#20 720.9 Γö£ ╞Æ /api/v1/providers/[provider]/chat/completions
+#20 720.9 Γö£ ╞Æ /api/v1/providers/[provider]/embeddings
+#20 720.9 Γö£ ╞Æ /api/v1/providers/[provider]/images/generations
+#20 720.9 Γö£ ╞Æ /api/v1/providers/[provider]/limits
+#20 720.9 Γö£ ╞Æ /api/v1/providers/[provider]/models
+#20 720.9 Γö£ ╞Æ /api/v1/providers/[provider]/voices
+#20 720.9 Γö£ ╞Æ /api/v1/providers/[provider]/voices/[voiceId]
+#20 720.9 Γö£ ╞Æ /api/v1/providers/suggested-models
+#20 720.9 Γö£ ╞Æ /api/v1/quota-recoveries/[id]
+#20 720.9 Γö£ ╞Æ /api/v1/quotas/check
+#20 720.9 Γö£ ╞Æ /api/v1/registered-keys
+#20 720.9 Γö£ ╞Æ /api/v1/registered-keys/[id]
+#20 720.9 Γö£ ╞Æ /api/v1/registered-keys/[id]/revoke
+#20 720.9 Γö£ ╞Æ /api/v1/relay/chat/completions
+#20 720.9 Γö£ ╞Æ /api/v1/relay/chat/completions/bifrost
+#20 720.9 Γö£ ╞Æ /api/v1/rerank
+#20 720.9 Γö£ ╞Æ /api/v1/responses
+#20 720.9 Γö£ ╞Æ /api/v1/responses/[...path]
+#20 720.9 Γö£ ╞Æ /api/v1/responses/input_tokens
+#20 720.9 Γö£ ╞Æ /api/v1/search
+#20 720.9 Γö£ ╞Æ /api/v1/search/analytics
+#20 720.9 Γö£ ╞Æ /api/v1/segment
+#20 720.9 Γö£ ╞Æ /api/v1/session-leases
+#20 720.9 Γö£ ╞Æ /api/v1/sound-generation
+#20 720.9 Γö£ ╞Æ /api/v1/speech-to-text
+#20 720.9 Γö£ ╞Æ /api/v1/systemone
+#20 720.9 Γö£ ╞Æ /api/v1/text-to-speech/[voiceId]
+#20 720.9 Γö£ ╞Æ /api/v1/video-bridge/drilldown
+#20 720.9 Γö£ ╞Æ /api/v1/videos/generations
+#20 720.9 Γö£ ╞Æ /api/v1/voices
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/api/chat
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/api/show
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/api/tags
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/api/version
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/chat/completions
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/combos
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/models
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/responses
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/v1/chat/completions
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/[token]/v1/models
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/combos/[token]/[[...slug]]
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/api/chat
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/api/show
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/api/tags
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/api/version
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/chat/completions
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/combos
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/models
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/responses
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/v1/chat/completions
+#20 720.9 Γö£ ╞Æ /api/v1/vscode/raw/[token]/v1/models
+#20 720.9 Γö£ ╞Æ /api/v1/web/fetch
+#20 720.9 Γö£ ╞Æ /api/v1/web/map
+#20 720.9 Γö£ ╞Æ /api/v1/ws
+#20 720.9 Γö£ ╞Æ /api/v1beta/models
+#20 720.9 Γö£ ╞Æ /api/v1beta/models/[...path]
+#20 720.9 Γö£ ╞Æ /api/version-manager/check-update
+#20 720.9 Γö£ ╞Æ /api/version-manager/install
+#20 720.9 Γö£ ╞Æ /api/version-manager/restart
+#20 720.9 Γö£ ╞Æ /api/version-manager/start
+#20 720.9 Γö£ ╞Æ /api/version-manager/status
+#20 720.9 Γö£ ╞Æ /api/version-manager/stop
+#20 720.9 Γö£ ╞Æ /api/vnc-session
+#20 720.9 Γö£ ╞Æ /api/vnc-session/[...params]
+#20 720.9 Γö£ ╞Æ /api/webhooks
+#20 720.9 Γö£ ╞Æ /api/webhooks/[id]
+#20 720.9 Γö£ ╞Æ /api/webhooks/[id]/deliveries
+#20 720.9 Γö£ ╞Æ /api/webhooks/[id]/test
+#20 720.9 Γö£ ╞Æ /api/webhooks/validate-url
+#20 720.9 Γö£ ╞Æ /auth/callback
+#20 720.9 Γö£ ╞Æ /authorize
+#20 720.9 Γö£ ╞Æ /callback
+#20 720.9 Γö£ ╞Æ /connect/codex/[token]
+#20 720.9 Γö£ ╞Æ /dashboard
+#20 720.9 Γö£ ╞Æ /dashboard/a2a
+#20 720.9 Γö£ ╞Æ /dashboard/acp-agents
+#20 720.9 Γö£ ╞Æ /dashboard/activity
+#20 720.9 Γö£ ╞Æ /dashboard/agent-skills
+#20 720.9 Γö£ ╞Æ /dashboard/analytics
+#20 720.9 Γö£ ╞Æ /dashboard/analytics/combo-health
+#20 720.9 Γö£ ╞Æ /dashboard/analytics/compression
+#20 720.9 Γö£ ╞Æ /dashboard/analytics/evals
+#20 720.9 Γö£ ╞Æ /dashboard/analytics/search
+#20 720.9 Γö£ ╞Æ /dashboard/analytics/utilization
+#20 720.9 Γö£ ╞Æ /dashboard/api-endpoints
+#20 720.9 Γö£ ╞Æ /dashboard/api-manager
+#20 720.9 Γö£ ╞Æ /dashboard/api-manager/[id]/access
+#20 720.9 Γö£ ╞Æ /dashboard/api-manager/routing
+#20 720.9 Γö£ ╞Æ /dashboard/audit
+#20 720.9 Γö£ ╞Æ /dashboard/audit/a2a
+#20 720.9 Γö£ ╞Æ /dashboard/audit/mcp
+#20 720.9 Γö£ ╞Æ /dashboard/auto-combo
+#20 720.9 Γö£ ╞Æ /dashboard/batch
+#20 720.9 Γö£ ╞Æ /dashboard/batch/files
+#20 720.9 Γö£ ╞Æ /dashboard/cache
+#20 720.9 Γö£ ╞Æ /dashboard/cache/media
+#20 720.9 Γö£ ╞Æ /dashboard/changelog
+#20 720.9 Γö£ ╞Æ /dashboard/chaos
+#20 720.9 Γö£ ╞Æ /dashboard/cli-agents
+#20 720.9 Γö£ ╞Æ /dashboard/cli-agents/[id]
+#20 720.9 Γö£ ╞Æ /dashboard/cli-code
+#20 720.9 Γö£ ╞Æ /dashboard/cli-code/[id]
+#20 720.9 Γö£ ╞Æ /dashboard/cloud-agents
+#20 720.9 Γö£ ╞Æ /dashboard/combos
+#20 720.9 Γö£ ╞Æ /dashboard/combos/[id]
+#20 720.9 Γö£ ╞Æ /dashboard/combos/live
+#20 720.9 Γö£ ╞Æ /dashboard/combos/playground
+#20 720.9 Γö£ ╞Æ /dashboard/compression
+#20 720.9 Γö£ ╞Æ /dashboard/compression/exclusions
+#20 720.9 Γö£ ╞Æ /dashboard/compression/live
+#20 720.9 Γö£ ╞Æ /dashboard/compression/studio
+#20 720.9 Γö£ ╞Æ /dashboard/conductor
+#20 720.9 Γö£ ╞Æ /dashboard/context
+#20 720.9 Γö£ ╞Æ /dashboard/context/aggressive
+#20 720.9 Γö£ ╞Æ /dashboard/context/caveman
+#20 720.9 Γö£ ╞Æ /dashboard/context/ccr
+#20 720.9 Γö£ ╞Æ /dashboard/context/combos
+#20 720.9 Γö£ ╞Æ /dashboard/context/headroom
+#20 720.9 Γö£ ╞Æ /dashboard/context/lite
+#20 720.9 Γö£ ╞Æ /dashboard/context/llmlingua
+#20 720.9 Γö£ ╞Æ /dashboard/context/omniglyph
+#20 720.9 Γö£ ╞Æ /dashboard/context/rtk
+#20 720.9 Γö£ ╞Æ /dashboard/context/session-dedup
+#20 720.9 Γö£ ╞Æ /dashboard/context/settings
+#20 720.9 Γö£ ╞Æ /dashboard/context/ultra
+#20 720.9 Γö£ ╞Æ /dashboard/conversations
+#20 720.9 Γö£ ╞Æ /dashboard/costs
+#20 720.9 Γö£ ╞Æ /dashboard/costs/budget
+#20 720.9 Γö£ ╞Æ /dashboard/costs/pricing
+#20 720.9 Γö£ ╞Æ /dashboard/costs/quota-share
+#20 720.9 Γö£ ╞Æ /dashboard/costs/teams
+#20 720.9 Γö£ ╞Æ /dashboard/discovery
+#20 720.9 Γö£ ╞Æ /dashboard/endpoint
+#20 720.9 Γö£ ╞Æ /dashboard/free-provider-rankings
+#20 720.9 Γö£ ╞Æ /dashboard/free-tiers
+#20 720.9 Γö£ ╞Æ /dashboard/gamification/admin
+#20 720.9 Γö£ ╞Æ /dashboard/health
+#20 720.9 Γö£ ╞Æ /dashboard/leaderboard
+#20 720.9 Γö£ ╞Æ /dashboard/limits
+#20 720.9 Γö£ ╞Æ /dashboard/log-export
+#20 720.9 Γö£ ╞Æ /dashboard/logs
+#20 720.9 Γö£ ╞Æ /dashboard/logs/activity
+#20 720.9 Γö£ ╞Æ /dashboard/logs/console
+#20 720.9 Γö£ ╞Æ /dashboard/logs/proxy
+#20 720.9 Γö£ ╞Æ /dashboard/logs/timeline
+#20 720.9 Γö£ ╞Æ /dashboard/mcp
+#20 720.9 Γö£ ╞Æ /dashboard/media-providers
+#20 720.9 Γö£ ╞Æ /dashboard/media-providers/[kind]
+#20 720.9 Γö£ ╞Æ /dashboard/media-providers/[kind]/[id]
+#20 720.9 Γö£ ╞Æ /dashboard/memory
+#20 720.9 Γö£ ╞Æ /dashboard/models
+#20 720.9 Γö£ ╞Æ /dashboard/omni-skills
+#20 720.9 Γö£ ╞Æ /dashboard/onboarding
+#20 720.9 Γö£ ╞Æ /dashboard/orchestration
+#20 720.9 Γö£ ╞Æ /dashboard/playground
+#20 720.9 Γö£ ╞Æ /dashboard/plugins
+#20 720.9 Γö£ ╞Æ /dashboard/plugins/[name]/config
+#20 720.9 Γö£ ╞Æ /dashboard/profile
+#20 720.9 Γö£ ╞Æ /dashboard/provider-stats
+#20 720.9 Γö£ ╞Æ /dashboard/providers
+#20 720.9 Γö£ ╞Æ /dashboard/providers/[id]
+#20 720.9 Γö£ ╞Æ /dashboard/providers/chatgpt/connect
+#20 720.9 Γö£ ╞Æ /dashboard/providers/new
+#20 720.9 Γö£ ╞Æ /dashboard/providers/services
+#20 720.9 Γö£ ╞Æ /dashboard/providers/services/[name]/embed/[[...path]]
+#20 720.9 Γö£ ╞Æ /dashboard/quota
+#20 720.9 Γö£ ╞Æ /dashboard/radar
+#20 720.9 Γö£ ╞Æ /dashboard/radar/combos
+#20 720.9 Γö£ ╞Æ /dashboard/radar/intel
+#20 720.9 Γö£ ╞Æ /dashboard/radar/offers
+#20 720.9 Γö£ ╞Æ /dashboard/radar/setup
+#20 720.9 Γö£ ╞Æ /dashboard/relay
+#20 720.9 Γö£ ╞Æ /dashboard/resilience/connections
+#20 720.9 Γö£ ╞Æ /dashboard/resilience/cooldowns
+#20 720.9 Γö£ ╞Æ /dashboard/runtime
+#20 720.9 Γö£ ╞Æ /dashboard/search-tools
+#20 720.9 Γö£ ╞Æ /dashboard/settings
+#20 720.9 Γö£ ╞Æ /dashboard/settings/access-tokens
+#20 720.9 Γö£ ╞Æ /dashboard/settings/advanced
+#20 720.9 Γö£ ╞Æ /dashboard/settings/ai
+#20 720.9 Γö£ ╞Æ /dashboard/settings/appearance
+#20 720.9 Γö£ ╞Æ /dashboard/settings/cache
+#20 720.9 Γö£ ╞Æ /dashboard/settings/feature-flags
+#20 720.9 Γö£ ╞Æ /dashboard/settings/general
+#20 720.9 Γö£ ╞Æ /dashboard/settings/modality-bridge
+#20 720.9 Γö£ ╞Æ /dashboard/settings/pricing
+#20 720.9 Γö£ ╞Æ /dashboard/settings/resilience
+#20 720.9 Γö£ ╞Æ /dashboard/settings/routing
+#20 720.9 Γö£ ╞Æ /dashboard/settings/security
+#20 720.9 Γö£ ╞Æ /dashboard/settings/sidebar
+#20 720.9 Γö£ ╞Æ /dashboard/system/1proxy
+#20 720.9 Γö£ ╞Æ /dashboard/system/mitm-proxy
+#20 720.9 Γö£ ╞Æ /dashboard/system/proxy
+#20 720.9 Γö£ ╞Æ /dashboard/tokens
+#20 720.9 Γö£ ╞Æ /dashboard/tools/agent-bridge
+#20 720.9 Γö£ ╞Æ /dashboard/tools/traffic-inspector
+#20 720.9 Γö£ ╞Æ /dashboard/translator
+#20 720.9 Γö£ ╞Æ /dashboard/usage
+#20 720.9 Γö£ ╞Æ /dashboard/webhooks
+#20 720.9 Γö£ ╞Æ /docs
+#20 720.9 Γö£ ╞Æ /docs/[...slug]
+#20 720.9 Γö£ ╞Æ /docs/api-explorer
+#20 720.9 Γö£ ╞Æ /docs/api/search
+#20 720.9 Γö£ ╞Æ /forbidden
+#20 720.9 Γö£ ╞Æ /forgot-password
+#20 720.9 Γö£ ╞Æ /healthz
+#20 720.9 Γö£ ╞Æ /home
+#20 720.9 Γö£ ╞Æ /landing
+#20 720.9 Γö£ ╞Æ /livez
+#20 720.9 Γö£ ╞Æ /login
+#20 720.9 Γö£ ╞Æ /maintenance
+#20 720.9 Γö£ Γùï /manifest.webmanifest
+#20 720.9 Γö£ ╞Æ /miniapp
+#20 720.9 Γö£ ╞Æ /offline
+#20 720.9 Γö£ ╞Æ /privacy
+#20 720.9 Γö£ ╞Æ /readyz
+#20 720.9 Γö£ ╞Æ /status
+#20 720.9 Γöö ╞Æ /terms
+#20 720.9 
+#20 720.9 
+#20 720.9 ╞Æ Proxy (Middleware)
+#20 720.9 
+#20 720.9 Γùï  (Static)   prerendered as static content
+#20 720.9 ╞Æ  (Dynamic)  server-rendered on demand
+#20 720.9 
+#20 727.2 [build-next-isolated] Copied docs/ to standalone output
+#20 730.9 npm warn Unknown env config "onnxruntime-node-install". This will error in a future major version of npm. See `npm help npmrc` for supported config options.
+#20 730.9 npm warn Unknown project config "onnxruntime-node-install". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+#20 730.9 npm notice run omniroute@3.8.55 npx
+#20 730.9 npm notice run 'node-gyp' rebuild
+#20 731.0 gyp info it worked if it ends with ok
+#20 731.0 gyp info using node-gyp@12.4.0
+#20 731.0 gyp info using node@26.12.1 | linux | x64
+#20 731.2 gyp info find Python using Python version 3.13.5 found at "/usr/bin/python3"
+#20 731.4 
+#20 731.4 gyp info spawn /usr/bin/python3
+#20 731.4 gyp info spawn args [
+#20 731.4 gyp info spawn args '/app/node_modules/node-gyp/gyp/gyp_main.py',
+#20 731.4 gyp info spawn args 'binding.gyp',
+#20 731.4 gyp info spawn args '-f',
+#20 731.4 gyp info spawn args 'make',
+#20 731.4 gyp info spawn args '-I',
+#20 731.4 gyp info spawn args '/app/src/mitm/tproxy/native/build/config.gypi',
+#20 731.4 gyp info spawn args '-I',
+#20 731.4 gyp info spawn args '/app/node_modules/node-gyp/addon.gypi',
+#20 731.4 gyp info spawn args '-I',
+#20 731.4 gyp info spawn args '/root/.cache/node-gyp/26.12.1/include/node/common.gypi',
+#20 731.4 gyp info spawn args '-Dlibrary=shared_library',
+#20 731.4 gyp info spawn args '-Dvisibility=default',
+#20 731.4 gyp info spawn args '-Dnode_root_dir=/root/.cache/node-gyp/26.12.1',
+#20 731.4 gyp info spawn args '-Dnode_gyp_dir=/app/node_modules/node-gyp',
+#20 731.4 gyp info spawn args '-Dnode_lib_file=/root/.cache/node-gyp/26.12.1/<(target_arch)/node.lib',
+#20 731.4 gyp info spawn args '-Dmodule_root_dir=/app/src/mitm/tproxy/native',
+#20 731.4 gyp info spawn args '-Dnode_engine=v8',
+#20 731.4 gyp info spawn args '--depth=.',
+#20 731.4 gyp info spawn args '--no-parallel',
+#20 731.4 gyp info spawn args '--generator-output',
+#20 731.4 gyp info spawn args 'build',
+#20 731.4 gyp info spawn args '-Goutput_dir=.'
+#20 731.4 gyp info spawn args ]
+#20 731.8 gyp info spawn make
+#20 731.8 gyp info spawn args [ 'BUILDTYPE=Release', '-C', 'build' ]
+#20 731.8 make: Entering directory '/app/src/mitm/tproxy/native/build'
+#20 731.8   CC(target) Release/obj.target/transparent/transparent.o
+#20 732.2   SOLINK_MODULE(target) Release/obj.target/transparent.node
+#20 732.3   COPY Release/transparent.node
+#20 732.3 make: Leaving directory '/app/src/mitm/tproxy/native/build'
+#20 732.3 gyp info ok 
+#20 732.3 [build-next-isolated] Built TPROXY native addon (transparent.node)
+#20 732.3 [build-next-isolated] Assembling standalone bundle (static + public + natives + extras)...
+#20 732.3 [assembleStandalone] Removed 'type':'module' from standalone package.json (server.js is CJS)
+#20 733.5 [assembleStandalone] Hash-strip: patched 1 hashed require() in 1 server chunk file(s)
+#20 733.6 [assembleStandalone] Copied native asset: better-sqlite3 native binary
+#20 733.6 [assembleStandalone] Copied native asset: better-sqlite3 prebuilt native binaries
+#20 735.0 [assembleStandalone] Copied native asset: onnxruntime-node native binaries (libonnxruntime .so + .node addon)
+#20 735.0 [assembleStandalone] Copied native asset: TPROXY transparent-socket addon (Linux-only, opt-in)
+#20 735.0 [assembleStandalone] Synced module: tsx CLI loader
+#20 735.0 [assembleStandalone] Synced module: esbuild CLI compiler
+#20 735.1 [assembleStandalone] Synced module: esbuild platform binaries
+#20 735.1 [assembleStandalone] Synced module: wreq-js TLS runtime
+#20 735.1 [assembleStandalone] Synced module: @wreq-js/binding-linux-x64-gnu native binding
+#20 735.1 [assembleStandalone] Synced module: wreq-js native provenance manifest
+#20 735.1 [assembleStandalone] Synced module: wreq-js Rust license inventory
+#20 735.1 [assembleStandalone] Synced module: wreq-js Rust/native notice bundle
+#20 735.5 [assembleStandalone] Synced module: @swc/helpers
+#20 735.5 [assembleStandalone] Synced module: pino-abstract-transport
+#20 735.5 [assembleStandalone] Synced module: pino-pretty
+#20 735.5 [assembleStandalone] Synced module: split2
+#20 735.6 [assembleStandalone] Synced module: compression worker external: uuid
+#20 735.6 [assembleStandalone] Synced module: compression worker external: @toon-format/toon
+#20 735.7 [assembleStandalone] Synced module: compression worker external: omniglyph
+#20 736.9 [assembleStandalone] Synced module: compression worker external: gpt-tokenizer
+#20 736.9 [assembleStandalone] Synced module: compression worker external: safe-regex
+#20 736.9 [assembleStandalone] Synced module: compression worker external: regexp-tree
+#20 736.9 [assembleStandalone] Synced module: compression worker external: smol-toml
+#20 737.0 [assembleStandalone] Synced module: compression worker external: socks
+#20 737.0 [assembleStandalone] Synced module: compression worker external: ip-address
+#20 737.0 [assembleStandalone] Synced module: compression worker external: smart-buffer
+#20 737.0 [assembleStandalone] Synced module: compression worker external: xxhash-wasm
+#20 737.0 [assembleStandalone] Synced module: compression worker external: yazl
+#20 737.0 [assembleStandalone] Synced module: compression worker external: buffer-crc32
+#20 737.1 [assembleStandalone] Synced module: ioredis (dynamic import ΓÇö #6559)
+#20 737.1 [assembleStandalone] Synced module: bcryptjs (bin/cli/settings-store.mjs ΓÇö reset-password CLI)
+#20 737.1 [assembleStandalone] Synced module: migrations
+#20 737.1 [assembleStandalone] Synced module: MITM server
+#20 737.1 [assembleStandalone] Synced module: MITM _internal shims (#9451)
+#20 737.1 [assembleStandalone] Synced module: selfsigned (MITM rootCaShim dynamic import ΓÇö #9451)
+#20 737.1 [assembleStandalone] Synced module: run-standalone script
+#20 737.1 [assembleStandalone] Synced module: WS/peer-stamp standalone server wrapper
+#20 737.1 [assembleStandalone] Synced module: peer-stamp helper (server-ws.mjs dependency)
+#20 737.1 [assembleStandalone] Synced module: main-server timeouts (server-ws.mjs dependency, #7003/#7065-class)
+#20 737.1 [assembleStandalone] Synced module: systemd sd_notify helper (server-ws.mjs dependency)
+#20 737.1 [assembleStandalone] Synced module: HTTP method guard (server-ws.mjs dependency)
+#20 737.1 [assembleStandalone] Synced module: HEAD response guard (server-ws.mjs dependency)
+#20 737.1 [assembleStandalone] Synced module: h2c upgrade guard (server-ws.mjs dependency)
+#20 737.1 [assembleStandalone] Synced module: responses-ws-proxy (server-ws.mjs dependency)
+#20 737.1 [assembleStandalone] Synced module: http client abort guard (server-ws.mjs dependency)
+#20 737.1 [assembleStandalone] Synced module: ChatGPT Web Codex MCP tunnel entrypoint
+#20 737.1 [assembleStandalone] Synced module: webdav-handler (server-ws.mjs dependency)
+#20 737.1 [assembleStandalone] Synced module: tls-options (server-ws.mjs dependency)
+#20 737.1 [assembleStandalone] Synced module: runtime-env script
+#20 737.1 [assembleStandalone] Synced module: bootstrap-env script
+#20 737.1 [assembleStandalone] Synced module: normalizeBasePath helper
+#20 737.1 [assembleStandalone] Synced module: docker basePath entrypoint
+#20 737.1 [assembleStandalone] Synced module: docker basePath patcher
+#20 737.1 [assembleStandalone] Synced module: healthcheck script
+#20 737.1 [assembleStandalone] Synced module: public directory
+#20 737.3 [assembleStandalone] Synced module: playwright-core (dynamic import by gemini-web executor)
+#20 737.4 [assembleStandalone] Synced module: undici (MCP server static import ΓÇö #7701)
+#20 737.4 [assembleStandalone] Synced module: ws (externalized runtime package shadow fix)
+#20 737.5 [assembleStandalone] Synced module: sql.js WASM fallback runtime
+#20 737.5 [assembleStandalone] Synced module: sqlite-vec wrapper (vector memory - loaded at runtime via createRequire)
+#20 737.5 [assembleStandalone] Synced module: sqlite-vec-linux-x64
+#20 758.3 [assembleStandalone] Γ£à Co-located 40 LLMLingua SLM optional package(s) into standalone node_modules.
+#20 763.7 [assembleStandalone] Γ£à Co-located 35 LLMLingua SLM optional package(s) into standalone node_modules.
+#20 763.8 [assembleStandalone] Pruned 982 Next.js trace manifest(s)
+#20 763.9 [write-build-base-path] Recorded basePath (root) -> .build/next/standalone/BUILD_OMNIROUTE_BASE_PATH
+#20 763.9 npm notice run omniroute@3.8.55 postbuild
+#20 763.9 npm notice run node scripts/build/colocate-standalone.mjs
+#20 764.0 
+#20 764.0   .build/next/standalone/src/lib/db/healthCheckWorker.js  53.3kb
+#20 764.0 
+#20 764.0 ΓÜí Done in 7ms
+#20 764.0 
+#20 764.0   .build/next/standalone/src/lib/usage/callLogArtifactWorker.js  12.9kb
+#20 764.0 
+#20 764.0 ΓÜí Done in 5ms
+#20 764.0 [colocate-standalone] Γ£à call-log artifact worker bundled
+#20 764.0 
+#20 764.0   .build/next/standalone/src/lib/logExport/exportChild.js  143.1kb
+#20 764.0 
+#20 764.0 ΓÜí Done in 11ms
+#20 764.1 [colocate-standalone] Γ£à log-export child bundled
+#20 764.3 
+#20 764.3   ...xt/standalone/open-sse/services/compression/compressionWorker.js  3.4mb ΓÜá∩╕Å
+#20 764.3 
+#20 764.3 ΓÜí Done in 228ms
+#20 764.3 [colocate-standalone] Γ£à compression worker bundled
+#20 764.4 
+#20 764.4   ...lone/open-sse/services/compression/engines/llmlingua/onnxWorker.js  4.4kb
+#20 764.4 
+#20 764.4 ΓÜí Done in 4ms
+#20 764.4 [colocate-standalone] Γ£à LLMLingua worker bundled into standalone tree
+#20 764.4 [colocate-standalone] Γ£à optional-dep closure: 4 packages (copied 0)
+#20 764.6 [colocate-standalone] Γ£à ESM scope written: /app/.build/next/standalone/src/lib/db/package.json
+#20 764.6 [colocate-standalone] Γ£à ESM scope written: /app/.build/next/standalone/src/lib/usage/package.json
+#20 764.6 [colocate-standalone] Γ£à ESM scope written: /app/.build/next/standalone/src/lib/logExport/package.json
+#20 764.6 [colocate-standalone] Γ£à ESM scope written: /app/.build/next/standalone/open-sse/services/compression/package.json
+#20 764.6 [colocate-standalone] Γ£à ESM scope written: /app/.build/next/standalone/open-sse/services/compression/engines/llmlingua/package.json
+#20 DONE 805.0s
+
+#21 [runner-base 2/7] COPY --chown=node:node --from=builder /app/.build/next/standalone ./
+#21 DONE 78.6s
+
+#22 [runner-base 3/7] COPY --chown=node:node --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
+#22 DONE 3.0s
+
+#23 [runner-base 4/7] RUN test -f /app/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+#23 DONE 1.1s
+
+#24 [runner-base 5/7] COPY --chown=node:node --from=builder /app/scripts/dev/healthcheck.mjs ./healthcheck.mjs
+#24 DONE 0.4s
+
+#25 [runner-base 6/7] COPY --chown=node:node --from=builder /app/LICENSE ./LICENSE
+#25 DONE 0.4s
+
+#26 [runner-base 7/7] COPY --chmod=755 scripts/check-permissions.sh /app/check-permissions.sh
+#26 DONE 0.3s
+
+#27 [runner-web 1/3] COPY --from=builder /app/node_modules/playwright-core ./node_modules/playwright-core
+#27 DONE 1.1s
+
+#28 [runner-web 2/3] COPY --from=builder /app/node_modules/playwright ./node_modules/playwright
+#28 DONE 0.5s
+
+#29 [runner-web 3/3] RUN --mount=type=cache,id=s/92ca8a61-c1ba-421f-a389-d48ac7258c2d-apt-cache,target=/var/cache/apt,sharing=locked   --mount=type=cache,id=s/92ca8a61-c1ba-421f-a389-d48ac7258c2d-apt-lists,target=/var/lib/apt/lists,sharing=locked   apt-get update   && node node_modules/playwright/cli.js install chromium --with-deps   && apt-get install -y --no-install-recommends xvfb   && chown -R node:node /home/node/.cache   && rm -rf /var/lib/apt/lists/*
+#29 2.584 Get:1 http://deb.debian.org/debian trixie InRelease [140 kB]
+#29 3.100 Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+#29 3.333 Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+#29 3.554 Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9678 kB]
+#29 11.47 Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [1108 B]
+#29 11.58 Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [325 kB]
+#29 12.22 Fetched 10.2 MB in 11s (901 kB/s)
+#29 12.22 Reading package lists...
+#29 13.39 Installing dependencies...
+#29 14.23 Hit:1 http://deb.debian.org/debian trixie InRelease
+#29 14.34 Hit:2 http://deb.debian.org/debian trixie-updates InRelease
+#29 14.46 Hit:3 http://deb.debian.org/debian-security trixie-security InRelease
+#29 14.48 Reading package lists...
+#29 15.13 Reading package lists...
+#29 15.71 Building dependency tree...
+#29 15.85 Reading state information...
+#29 16.08 libglib2.0-0t64 is already the newest version (2.84.4-3~deb13u5).
+#29 16.08 libglib2.0-0t64 set to manually installed.
+#29 16.08 The following additional packages will be installed:
+#29 16.08   at-spi2-common fontconfig fontconfig-config libasound2-data libavahi-client3
+#29 16.08   libavahi-common-data libavahi-common3 libbrotli1 libcom-err2 libdatrie1
+#29 16.08   libdrm-amdgpu1 libdrm-common libdrm-intel1 libedit2 libelf1t64 libexpat1
+#29 16.08   libfontenc1 libfribidi0 libgl1 libgl1-mesa-dri libglvnd0 libglx-mesa0
+#29 16.08   libglx0 libgnutls30t64 libgraphite2-3 libgssapi-krb5-2 libharfbuzz0b libice6
+#29 16.08   libidn2-0 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libllvm19
+#29 16.08   libp11-kit0 libpciaccess0 libpixman-1-0 libpng16-16t64 libsensors-config
+#29 16.08   libsensors5 libsm6 libtasn1-6 libthai-data libthai0 libunistring5 libunwind8
+#29 16.08   libvulkan1 libwayland-server0 libx11-data libx11-xcb1 libxau6 libxaw7
+#29 16.08   libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-randr0 libxcb-render0
+#29 16.08   libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxdmcp6 libxfont2 libxi6
+#29 16.08   libxkbfile1 libxml2 libxmu6 libxpm4 libxrender1 libxshmfence1 libxt6t64
+#29 16.08   libxxf86vm1 libz3-4 mesa-libgallium x11-common x11-xkb-utils
+#29 16.08   xfonts-encodings xfonts-utils xkb-data xserver-common
+#29 16.09 Suggested packages:
+#29 16.09   alsa-utils libasound2-plugins cups-common gnutls-bin krb5-doc krb5-user
+#29 16.09   pciutils lm-sensors
+#29 16.09 Recommended packages:
+#29 16.09   fonts-ipafont-mincho fonts-liberation-sans-narrow fonts-tlwg-loma
+#29 16.09   alsa-ucm-conf alsa-topology-conf at-spi2-core dbus krb5-locales
+#29 16.09   mesa-vulkan-drivers | vulkan-icd xfonts-base xauth
+#29 16.52 The following NEW packages will be installed:
+#29 16.52   at-spi2-common fontconfig fontconfig-config fonts-freefont-ttf
+#29 16.52   fonts-ipafont-gothic fonts-liberation fonts-noto-color-emoji
+#29 16.52   fonts-tlwg-loma-otf fonts-unifont fonts-wqy-zenhei libasound2-data
+#29 16.52   libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libatspi2.0-0t64
+#29 16.52   libavahi-client3 libavahi-common-data libavahi-common3 libbrotli1 libcairo2
+#29 16.52   libcom-err2 libcups2t64 libdatrie1 libdbus-1-3 libdrm-amdgpu1 libdrm-common
+#29 16.52   libdrm-intel1 libdrm2 libedit2 libelf1t64 libexpat1 libfontconfig1
+#29 16.52   libfontenc1 libfreetype6 libfribidi0 libgbm1 libgl1 libgl1-mesa-dri
+#29 16.52   libglvnd0 libglx-mesa0 libglx0 libgnutls30t64 libgraphite2-3
+#29 16.52   libgssapi-krb5-2 libharfbuzz0b libice6 libidn2-0 libk5crypto3 libkeyutils1
+#29 16.52   libkrb5-3 libkrb5support0 libllvm19 libnspr4 libnss3 libp11-kit0
+#29 16.52   libpango-1.0-0 libpciaccess0 libpixman-1-0 libpng16-16t64 libsensors-config
+#29 16.52   libsensors5 libsm6 libtasn1-6 libthai-data libthai0 libunistring5 libunwind8
+#29 16.52   libvulkan1 libwayland-server0 libx11-6 libx11-data libx11-xcb1 libxau6
+#29 16.52   libxaw7 libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-randr0
+#29 16.52   libxcb-render0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1
+#29 16.52   libxcomposite1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxfont2 libxi6
+#29 16.52   libxkbcommon0 libxkbfile1 libxml2 libxmu6 libxpm4 libxrandr2 libxrender1
+#29 16.52   libxshmfence1 libxt6t64 libxxf86vm1 libz3-4 mesa-libgallium x11-common
+#29 16.52   x11-xkb-utils xfonts-encodings xfonts-scalable xfonts-utils xkb-data
+#29 16.52   xserver-common xvfb
+#29 17.01 0 upgraded, 110 newly installed, 0 to remove and 0 not upgraded.
+#29 17.01 Need to get 98.0 MB of archives.
+#29 17.01 After this operation, 357 MB of additional disk space will be used.
+#29 17.01 Get:1 http://deb.debian.org/debian trixie/main amd64 fonts-ipafont-gothic all 00303-23 [3515 kB]
+#29 18.61 Get:2 http://deb.debian.org/debian-security trixie-security/main amd64 libexpat1 amd64 2.9.0-1~deb13u1 [126 kB]
+#29 18.82 Get:3 http://deb.debian.org/debian trixie/main amd64 at-spi2-common all 2.56.2-1+deb13u2 [171 kB]
+#29 18.85 Get:4 http://deb.debian.org/debian-security trixie-security/main amd64 libbrotli1 amd64 1.1.0-2+deb13u1 [304 kB]
+#29 18.89 Get:5 http://deb.debian.org/debian-security trixie-security/main amd64 libpng16-16t64 amd64 1.6.48-1+deb13u6 [283 kB]
+#29 19.02 Get:6 http://deb.debian.org/debian trixie/main amd64 libfreetype6 amd64 2.13.3+dfsg-1+deb13u1 [452 kB]
+#29 19.04 Get:7 http://deb.debian.org/debian trixie/main amd64 fonts-liberation all 1:2.1.5-3 [1475 kB]
+#29 19.27 Get:8 http://deb.debian.org/debian trixie/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5318 kB]
+#29 19.91 Get:9 http://deb.debian.org/debian trixie/main amd64 fontconfig-config amd64 2.15.0-2.3 [318 kB]
+#29 19.95 Get:10 http://deb.debian.org/debian trixie/main amd64 libfontconfig1 amd64 2.15.0-2.3 [392 kB]
+#29 20.00 Get:11 http://deb.debian.org/debian trixie/main amd64 fontconfig amd64 2.15.0-2.3 [463 kB]
+#29 20.05 Get:12 http://deb.debian.org/debian trixie/main amd64 fonts-noto-color-emoji all 2.051-0+deb13u1 [10.1 MB]
+#29 21.27 Get:13 http://deb.debian.org/debian trixie/main amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [147 kB]
+#29 21.28 Get:14 http://deb.debian.org/debian trixie/main amd64 fonts-unifont all 1:15.1.01-1 [2211 kB]
+#29 21.54 Get:15 http://deb.debian.org/debian trixie/main amd64 fonts-wqy-zenhei all 0.9.45-8 [7479 kB]
+#29 22.40 Get:16 http://deb.debian.org/debian trixie/main amd64 libasound2-data all 1.2.14-1+deb13u1 [21.2 kB]
+#29 22.40 Get:17 http://deb.debian.org/debian trixie/main amd64 libasound2t64 amd64 1.2.14-1+deb13u1 [381 kB]
+#29 22.44 Get:18 http://deb.debian.org/debian trixie/main amd64 libatk1.0-0t64 amd64 2.56.2-1+deb13u2 [52.0 kB]
+#29 22.45 Get:19 http://deb.debian.org/debian trixie/main amd64 libdbus-1-3 amd64 1.16.2-2 [178 kB]
+#29 22.48 Get:20 http://deb.debian.org/debian trixie/main amd64 libxau6 amd64 1:1.0.11-1 [20.4 kB]
+#29 22.48 Get:21 http://deb.debian.org/debian trixie/main amd64 libxdmcp6 amd64 1:1.1.5-1 [27.8 kB]
+#29 22.49 Get:22 http://deb.debian.org/debian trixie/main amd64 libxcb1 amd64 1.17.0-2+b1 [144 kB]
+#29 22.50 Get:23 http://deb.debian.org/debian trixie/main amd64 libx11-data all 2:1.8.12-1 [343 kB]
+#29 22.54 Get:24 http://deb.debian.org/debian trixie/main amd64 libx11-6 amd64 2:1.8.12-1 [815 kB]
+#29 22.63 Get:25 http://deb.debian.org/debian trixie/main amd64 libxext6 amd64 2:1.3.4-1+b3 [50.4 kB]
+#29 22.65 Get:26 http://deb.debian.org/debian trixie/main amd64 libxi6 amd64 2:1.8.2-1 [78.9 kB]
+#29 22.66 Get:27 http://deb.debian.org/debian trixie/main amd64 libatspi2.0-0t64 amd64 2.56.2-1+deb13u2 [81.1 kB]
+#29 22.67 Get:28 http://deb.debian.org/debian trixie/main amd64 libatk-bridge2.0-0t64 amd64 2.56.2-1+deb13u2 [68.5 kB]
+#29 22.67 Get:29 http://deb.debian.org/debian trixie/main amd64 libavahi-common-data amd64 0.8-16 [112 kB]
+#29 22.78 Get:30 http://deb.debian.org/debian trixie/main amd64 libavahi-common3 amd64 0.8-16 [44.2 kB]
+#29 22.78 Get:31 http://deb.debian.org/debian trixie/main amd64 libavahi-client3 amd64 0.8-16 [48.4 kB]
+#29 22.80 Get:32 http://deb.debian.org/debian trixie/main amd64 libpixman-1-0 amd64 0.44.0-3 [248 kB]
+#29 22.82 Get:33 http://deb.debian.org/debian trixie/main amd64 libxcb-render0 amd64 1.17.0-2+b1 [115 kB]
+#29 22.83 Get:34 http://deb.debian.org/debian trixie/main amd64 libxcb-shm0 amd64 1.17.0-2+b1 [105 kB]
+#29 23.05 Get:35 http://deb.debian.org/debian trixie/main amd64 libxrender1 amd64 1:0.9.12-1 [27.9 kB]
+#29 23.05 Get:36 http://deb.debian.org/debian trixie/main amd64 libcairo2 amd64 1.18.4-1+b1 [538 kB]
+#29 23.10 Get:37 http://deb.debian.org/debian trixie/main amd64 libcom-err2 amd64 1.47.2-3+b12 [25.0 kB]
+#29 23.10 Get:38 http://deb.debian.org/debian trixie/main amd64 libunistring5 amd64 1.3-2 [477 kB]
+#29 23.15 Get:39 http://deb.debian.org/debian trixie/main amd64 libidn2-0 amd64 2.3.8-2 [109 kB]
+#29 23.16 Get:40 http://deb.debian.org/debian trixie/main amd64 libp11-kit0 amd64 0.25.5-3 [425 kB]
+#29 23.22 Get:41 http://deb.debian.org/debian trixie/main amd64 libtasn1-6 amd64 4.20.0-2+deb13u1 [50.1 kB]
+#29 23.23 Get:42 http://deb.debian.org/debian trixie/main amd64 libgnutls30t64 amd64 3.8.9-3+deb13u4 [1469 kB]
+#29 23.37 Get:43 http://deb.debian.org/debian trixie/main amd64 libkrb5support0 amd64 1.21.3-5+deb13u1 [33.1 kB]
+#29 23.37 Get:44 http://deb.debian.org/debian trixie/main amd64 libk5crypto3 amd64 1.21.3-5+deb13u1 [81.2 kB]
+#29 23.39 Get:45 http://deb.debian.org/debian trixie/main amd64 libkeyutils1 amd64 1.6.3-6 [9456 B]
+#29 23.39 Get:46 http://deb.debian.org/debian trixie/main amd64 libkrb5-3 amd64 1.21.3-5+deb13u1 [326 kB]
+#29 23.53 Get:47 http://deb.debian.org/debian trixie/main amd64 libgssapi-krb5-2 amd64 1.21.3-5+deb13u1 [138 kB]
+#29 23.54 Get:48 http://deb.debian.org/debian trixie/main amd64 libcups2t64 amd64 2.4.10-3+deb13u2 [252 kB]
+#29 23.58 Get:49 http://deb.debian.org/debian trixie/main amd64 libdatrie1 amd64 0.2.13-3+b1 [38.1 kB]
+#29 23.59 Get:50 http://deb.debian.org/debian trixie/main amd64 libdrm-common all 2.4.124-2 [8288 B]
+#29 23.59 Get:51 http://deb.debian.org/debian trixie/main amd64 libdrm2 amd64 2.4.124-2 [39.0 kB]
+#29 23.59 Get:52 http://deb.debian.org/debian trixie/main amd64 libdrm-amdgpu1 amd64 2.4.124-2 [22.6 kB]
+#29 23.59 Get:53 http://deb.debian.org/debian trixie/main amd64 libpciaccess0 amd64 0.17-3+b3 [51.9 kB]
+#29 23.60 Get:54 http://deb.debian.org/debian trixie/main amd64 libdrm-intel1 amd64 2.4.124-2 [64.1 kB]
+#29 23.61 Get:55 http://deb.debian.org/debian trixie/main amd64 libedit2 amd64 3.1-20250104-1 [93.8 kB]
+#29 23.73 Get:56 http://deb.debian.org/debian trixie/main amd64 libelf1t64 amd64 0.192-4 [189 kB]
+#29 23.83 Get:57 http://deb.debian.org/debian trixie/main amd64 libfontenc1 amd64 1:1.1.8-1+b2 [23.3 kB]
+#29 23.83 Get:58 http://deb.debian.org/debian trixie/main amd64 libfribidi0 amd64 1.0.16-1 [26.5 kB]
+#29 23.83 Get:59 http://deb.debian.org/debian trixie/main amd64 libwayland-server0 amd64 1.23.1-3 [34.4 kB]
+#29 23.85 Get:60 http://deb.debian.org/debian trixie/main amd64 libxml2 amd64 2.12.7+dfsg+really2.9.14-2.1+deb13u3 [700 kB]
+#29 23.98 Get:61 http://deb.debian.org/debian trixie/main amd64 libz3-4 amd64 4.13.3-1 [8560 kB]
+#29 24.96 Get:62 http://deb.debian.org/debian trixie/main amd64 libllvm19 amd64 1:19.1.7-3+b1 [26.0 MB]
+#29 27.98 Get:63 http://deb.debian.org/debian trixie/main amd64 libsensors-config all 1:3.6.2-2 [16.2 kB]
+#29 27.98 Get:64 http://deb.debian.org/debian trixie/main amd64 libsensors5 amd64 1:3.6.2-2 [37.5 kB]
+#29 27.98 Get:65 http://deb.debian.org/debian trixie/main amd64 libx11-xcb1 amd64 2:1.8.12-1 [247 kB]
+#29 28.02 Get:66 http://deb.debian.org/debian trixie/main amd64 libxcb-dri3-0 amd64 1.17.0-2+b1 [107 kB]
+#29 28.03 Get:67 http://deb.debian.org/debian trixie/main amd64 libxcb-present0 amd64 1.17.0-2+b1 [106 kB]
+#29 28.04 Get:68 http://deb.debian.org/debian trixie/main amd64 libxcb-randr0 amd64 1.17.0-2+b1 [117 kB]
+#29 28.06 Get:69 http://deb.debian.org/debian trixie/main amd64 libxcb-sync1 amd64 1.17.0-2+b1 [109 kB]
+#29 28.07 Get:70 http://deb.debian.org/debian trixie/main amd64 libxcb-xfixes0 amd64 1.17.0-2+b1 [109 kB]
+#29 28.08 Get:71 http://deb.debian.org/debian trixie/main amd64 libxshmfence1 amd64 1.3.3-1 [10.9 kB]
+#29 28.11 Get:72 http://deb.debian.org/debian trixie/main amd64 mesa-libgallium amd64 25.0.7-2+deb13u1 [9630 kB]
+#29 29.52 Get:73 http://deb.debian.org/debian trixie/main amd64 libgbm1 amd64 25.0.7-2+deb13u1 [44.6 kB]
+#29 29.53 Get:74 http://deb.debian.org/debian trixie/main amd64 libglvnd0 amd64 1.7.0-1+b2 [52.0 kB]
+#29 29.54 Get:75 http://deb.debian.org/debian trixie/main amd64 libxcb-glx0 amd64 1.17.0-2+b1 [122 kB]
+#29 29.56 Get:76 http://deb.debian.org/debian trixie/main amd64 libxxf86vm1 amd64 1:1.1.4-1+b4 [19.3 kB]
+#29 29.56 Get:77 http://deb.debian.org/debian trixie/main amd64 libvulkan1 amd64 1.4.309.0-1 [130 kB]
+#29 29.57 Get:78 http://deb.debian.org/debian trixie/main amd64 libgl1-mesa-dri amd64 25.0.7-2+deb13u1 [46.2 kB]
+#29 29.57 Get:79 http://deb.debian.org/debian trixie/main amd64 libglx-mesa0 amd64 25.0.7-2+deb13u1 [143 kB]
+#29 29.59 Get:80 http://deb.debian.org/debian trixie/main amd64 libglx0 amd64 1.7.0-1+b2 [34.9 kB]
+#29 29.60 Get:81 http://deb.debian.org/debian trixie/main amd64 libgl1 amd64 1.7.0-1+b2 [89.5 kB]
+#29 29.63 Get:82 http://deb.debian.org/debian trixie/main amd64 libgraphite2-3 amd64 1.3.14-2+deb13u1 [75.2 kB]
+#29 29.72 Get:83 http://deb.debian.org/debian trixie/main amd64 libharfbuzz0b amd64 10.2.0-1+deb13u1 [479 kB]
+#29 29.84 Get:84 http://deb.debian.org/debian trixie/main amd64 x11-common all 1:7.7+24+deb13u1 [217 kB]
+#29 29.87 Get:85 http://deb.debian.org/debian trixie/main amd64 libice6 amd64 2:1.1.1-1 [65.4 kB]
+#29 29.88 Get:86 http://deb.debian.org/debian trixie/main amd64 libnspr4 amd64 2:4.36-1 [110 kB]
+#29 29.89 Get:87 http://deb.debian.org/debian-security trixie-security/main amd64 libnss3 amd64 2:3.110-1+deb13u5 [1393 kB]
+#29 30.07 Get:88 http://deb.debian.org/debian trixie/main amd64 libthai-data all 0.1.29-2 [168 kB]
+#29 30.09 Get:89 http://deb.debian.org/debian trixie/main amd64 libthai0 amd64 0.1.29-2+b1 [49.4 kB]
+#29 30.09 Get:90 http://deb.debian.org/debian trixie/main amd64 libpango-1.0-0 amd64 1.56.3-1 [226 kB]
+#29 30.12 Get:91 http://deb.debian.org/debian trixie/main amd64 libsm6 amd64 2:1.2.6-1 [37.3 kB]
+#29 30.13 Get:92 http://deb.debian.org/debian trixie/main amd64 libunwind8 amd64 1.8.1-0.1 [56.3 kB]
+#29 30.13 Get:93 http://deb.debian.org/debian trixie/main amd64 libxt6t64 amd64 1:1.2.1-1.2+b2 [188 kB]
+#29 30.15 Get:94 http://deb.debian.org/debian trixie/main amd64 libxmu6 amd64 2:1.1.3-3+b4 [59.0 kB]
+#29 30.16 Get:95 http://deb.debian.org/debian trixie/main amd64 libxpm4 amd64 1:3.5.17-1+deb13u1 [55.9 kB]
+#29 30.17 Get:96 http://deb.debian.org/debian trixie/main amd64 libxaw7 amd64 2:1.0.16-1 [212 kB]
+#29 30.18 Get:97 http://deb.debian.org/debian trixie/main amd64 libxcomposite1 amd64 1:0.4.6-1 [16.3 kB]
+#29 30.29 Get:98 http://deb.debian.org/debian trixie/main amd64 libxdamage1 amd64 1:1.1.6-1+b2 [15.5 kB]
+#29 30.29 Get:99 http://deb.debian.org/debian trixie/main amd64 libxfixes3 amd64 1:6.0.0-2+b4 [20.2 kB]
+#29 30.30 Get:100 http://deb.debian.org/debian trixie/main amd64 libxfont2 amd64 1:2.0.6-1+deb13u1 [133 kB]
+#29 30.42 Get:101 http://deb.debian.org/debian trixie/main amd64 xkb-data all 2.42-1 [790 kB]
+#29 30.53 Get:102 http://deb.debian.org/debian trixie/main amd64 libxkbcommon0 amd64 1.7.0-2 [113 kB]
+#29 30.62 Get:103 http://deb.debian.org/debian trixie/main amd64 libxkbfile1 amd64 1:1.1.0-1+b4 [76.5 kB]
+#29 30.63 Get:104 http://deb.debian.org/debian trixie/main amd64 libxrandr2 amd64 2:1.5.4-1+b3 [36.3 kB]
+#29 30.63 Get:105 http://deb.debian.org/debian trixie/main amd64 x11-xkb-utils amd64 7.7+9 [159 kB]
+#29 30.65 Get:106 http://deb.debian.org/debian trixie/main amd64 xfonts-encodings all 1:1.0.4-2.2 [577 kB]
+#29 30.72 Get:107 http://deb.debian.org/debian trixie/main amd64 xfonts-utils amd64 1:7.7+7 [93.3 kB]
+#29 30.73 Get:108 http://deb.debian.org/debian trixie/main amd64 xfonts-scalable all 1:1.0.3-1.3 [306 kB]
+#29 30.77 Get:109 http://deb.debian.org/debian-security trixie-security/main amd64 xserver-common all 2:21.1.16-1.3+deb13u4 [2410 kB]
+#29 31.04 Get:110 http://deb.debian.org/debian-security trixie-security/main amd64 xvfb amd64 2:21.1.16-1.3+deb13u4 [3199 kB]
+#29 31.89 debconf: unable to initialize frontend: Dialog
+#29 31.89 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#29 31.89 debconf: falling back to frontend: Readline
+#29 31.89 debconf: unable to initialize frontend: Readline
+#29 31.89 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8, <STDIN> line 110.)
+#29 31.89 debconf: falling back to frontend: Teletype
+#29 31.90 debconf: unable to initialize frontend: Teletype
+#29 31.90 debconf: (This frontend requires a controlling tty.)
+#29 31.90 debconf: falling back to frontend: Noninteractive
+#29 34.33 Preconfiguring packages ...
+#29 34.73 Fetched 98.0 MB in 15s (6593 kB/s)
+#29 34.86 Selecting previously unselected package fonts-ipafont-gothic.
+#29 34.86 (Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 5735 files and directories currently installed.)
+#29 34.90 Preparing to unpack .../000-fonts-ipafont-gothic_00303-23_all.deb ...
+#29 34.92 Unpacking fonts-ipafont-gothic (00303-23) ...
+#29 35.25 Selecting previously unselected package libexpat1:amd64.
+#29 35.25 Preparing to unpack .../001-libexpat1_2.9.0-1~deb13u1_amd64.deb ...
+#29 35.29 Unpacking libexpat1:amd64 (2.9.0-1~deb13u1) ...
+#29 35.43 Selecting previously unselected package at-spi2-common.
+#29 35.43 Preparing to unpack .../002-at-spi2-common_2.56.2-1+deb13u2_all.deb ...
+#29 35.45 Unpacking at-spi2-common (2.56.2-1+deb13u2) ...
+#29 35.61 Selecting previously unselected package libbrotli1:amd64.
+#29 35.61 Preparing to unpack .../003-libbrotli1_1.1.0-2+deb13u1_amd64.deb ...
+#29 35.64 Unpacking libbrotli1:amd64 (1.1.0-2+deb13u1) ...
+#29 35.81 Selecting previously unselected package libpng16-16t64:amd64.
+#29 35.81 Preparing to unpack .../004-libpng16-16t64_1.6.48-1+deb13u6_amd64.deb ...
+#29 35.84 Unpacking libpng16-16t64:amd64 (1.6.48-1+deb13u6) ...
+#29 36.01 Selecting previously unselected package libfreetype6:amd64.
+#29 36.01 Preparing to unpack .../005-libfreetype6_2.13.3+dfsg-1+deb13u1_amd64.deb ...
+#29 36.03 Unpacking libfreetype6:amd64 (2.13.3+dfsg-1+deb13u1) ...
+#29 36.19 Selecting previously unselected package fonts-liberation.
+#29 36.19 Preparing to unpack .../006-fonts-liberation_1%3a2.1.5-3_all.deb ...
+#29 36.22 Unpacking fonts-liberation (1:2.1.5-3) ...
+#29 36.44 Selecting previously unselected package fonts-freefont-ttf.
+#29 36.44 Preparing to unpack .../007-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+#29 36.46 Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+#29 36.91 Selecting previously unselected package fontconfig-config.
+#29 36.91 Preparing to unpack .../008-fontconfig-config_2.15.0-2.3_amd64.deb ...
+#29 36.93 Unpacking fontconfig-config (2.15.0-2.3) ...
+#29 37.09 Selecting previously unselected package libfontconfig1:amd64.
+#29 37.09 Preparing to unpack .../009-libfontconfig1_2.15.0-2.3_amd64.deb ...
+#29 37.11 Unpacking libfontconfig1:amd64 (2.15.0-2.3) ...
+#29 37.27 Selecting previously unselected package fontconfig.
+#29 37.27 Preparing to unpack .../010-fontconfig_2.15.0-2.3_amd64.deb ...
+#29 37.29 Unpacking fontconfig (2.15.0-2.3) ...
+#29 37.50 Selecting previously unselected package fonts-noto-color-emoji.
+#29 37.50 Preparing to unpack .../011-fonts-noto-color-emoji_2.051-0+deb13u1_all.deb ...
+#29 37.53 Unpacking fonts-noto-color-emoji (2.051-0+deb13u1) ...
+#29 37.99 Selecting previously unselected package fonts-tlwg-loma-otf.
+#29 37.99 Preparing to unpack .../012-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+#29 38.02 Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+#29 38.17 Selecting previously unselected package fonts-unifont.
+#29 38.17 Preparing to unpack .../013-fonts-unifont_1%3a15.1.01-1_all.deb ...
+#29 38.19 Unpacking fonts-unifont (1:15.1.01-1) ...
+#29 38.58 Selecting previously unselected package fonts-wqy-zenhei.
+#29 38.58 Preparing to unpack .../014-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+#29 38.61 Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+#29 39.19 Selecting previously unselected package libasound2-data.
+#29 39.19 Preparing to unpack .../015-libasound2-data_1.2.14-1+deb13u1_all.deb ...
+#29 39.23 Unpacking libasound2-data (1.2.14-1+deb13u1) ...
+#29 39.58 Selecting previously unselected package libasound2t64:amd64.
+#29 39.59 Preparing to unpack .../016-libasound2t64_1.2.14-1+deb13u1_amd64.deb ...
+#29 39.65 Unpacking libasound2t64:amd64 (1.2.14-1+deb13u1) ...
+#29 39.85 Selecting previously unselected package libatk1.0-0t64:amd64.
+#29 39.85 Preparing to unpack .../017-libatk1.0-0t64_2.56.2-1+deb13u2_amd64.deb ...
+#29 39.88 Unpacking libatk1.0-0t64:amd64 (2.56.2-1+deb13u2) ...
+#29 40.07 Selecting previously unselected package libdbus-1-3:amd64.
+#29 40.07 Preparing to unpack .../018-libdbus-1-3_1.16.2-2_amd64.deb ...
+#29 40.10 Unpacking libdbus-1-3:amd64 (1.16.2-2) ...
+#29 40.26 Selecting previously unselected package libxau6:amd64.
+#29 40.26 Preparing to unpack .../019-libxau6_1%3a1.0.11-1_amd64.deb ...
+#29 40.28 Unpacking libxau6:amd64 (1:1.0.11-1) ...
+#29 40.44 Selecting previously unselected package libxdmcp6:amd64.
+#29 40.45 Preparing to unpack .../020-libxdmcp6_1%3a1.1.5-1_amd64.deb ...
+#29 40.47 Unpacking libxdmcp6:amd64 (1:1.1.5-1) ...
+#29 40.64 Selecting previously unselected package libxcb1:amd64.
+#29 40.64 Preparing to unpack .../021-libxcb1_1.17.0-2+b1_amd64.deb ...
+#29 40.67 Unpacking libxcb1:amd64 (1.17.0-2+b1) ...
+#29 40.79 Selecting previously unselected package libx11-data.
+#29 40.79 Preparing to unpack .../022-libx11-data_2%3a1.8.12-1_all.deb ...
+#29 40.81 Unpacking libx11-data (2:1.8.12-1) ...
+#29 41.03 Selecting previously unselected package libx11-6:amd64.
+#29 41.03 Preparing to unpack .../023-libx11-6_2%3a1.8.12-1_amd64.deb ...
+#29 41.06 Unpacking libx11-6:amd64 (2:1.8.12-1) ...
+#29 41.27 Selecting previously unselected package libxext6:amd64.
+#29 41.27 Preparing to unpack .../024-libxext6_2%3a1.3.4-1+b3_amd64.deb ...
+#29 41.30 Unpacking libxext6:amd64 (2:1.3.4-1+b3) ...
+#29 41.47 Selecting previously unselected package libxi6:amd64.
+#29 41.47 Preparing to unpack .../025-libxi6_2%3a1.8.2-1_amd64.deb ...
+#29 41.50 Unpacking libxi6:amd64 (2:1.8.2-1) ...
+#29 41.71 Selecting previously unselected package libatspi2.0-0t64:amd64.
+#29 41.72 Preparing to unpack .../026-libatspi2.0-0t64_2.56.2-1+deb13u2_amd64.deb ...
+#29 41.74 Unpacking libatspi2.0-0t64:amd64 (2.56.2-1+deb13u2) ...
+#29 41.93 Selecting previously unselected package libatk-bridge2.0-0t64:amd64.
+#29 41.93 Preparing to unpack .../027-libatk-bridge2.0-0t64_2.56.2-1+deb13u2_amd64.deb ...
+#29 41.95 Unpacking libatk-bridge2.0-0t64:amd64 (2.56.2-1+deb13u2) ...
+#29 42.10 Selecting previously unselected package libavahi-common-data:amd64.
+#29 42.10 Preparing to unpack .../028-libavahi-common-data_0.8-16_amd64.deb ...
+#29 42.12 Unpacking libavahi-common-data:amd64 (0.8-16) ...
+#29 42.31 Selecting previously unselected package libavahi-common3:amd64.
+#29 42.31 Preparing to unpack .../029-libavahi-common3_0.8-16_amd64.deb ...
+#29 42.33 Unpacking libavahi-common3:amd64 (0.8-16) ...
+#29 42.53 Selecting previously unselected package libavahi-client3:amd64.
+#29 42.53 Preparing to unpack .../030-libavahi-client3_0.8-16_amd64.deb ...
+#29 42.56 Unpacking libavahi-client3:amd64 (0.8-16) ...
+#29 42.76 Selecting previously unselected package libpixman-1-0:amd64.
+#29 42.76 Preparing to unpack .../031-libpixman-1-0_0.44.0-3_amd64.deb ...
+#29 42.80 Unpacking libpixman-1-0:amd64 (0.44.0-3) ...
+#29 43.02 Selecting previously unselected package libxcb-render0:amd64.
+#29 43.02 Preparing to unpack .../032-libxcb-render0_1.17.0-2+b1_amd64.deb ...
+#29 43.05 Unpacking libxcb-render0:amd64 (1.17.0-2+b1) ...
+#29 43.31 Selecting previously unselected package libxcb-shm0:amd64.
+#29 43.31 Preparing to unpack .../033-libxcb-shm0_1.17.0-2+b1_amd64.deb ...
+#29 43.35 Unpacking libxcb-shm0:amd64 (1.17.0-2+b1) ...
+#29 43.56 Selecting previously unselected package libxrender1:amd64.
+#29 43.56 Preparing to unpack .../034-libxrender1_1%3a0.9.12-1_amd64.deb ...
+#29 43.61 Unpacking libxrender1:amd64 (1:0.9.12-1) ...
+#29 43.86 Selecting previously unselected package libcairo2:amd64.
+#29 43.86 Preparing to unpack .../035-libcairo2_1.18.4-1+b1_amd64.deb ...
+#29 43.89 Unpacking libcairo2:amd64 (1.18.4-1+b1) ...
+#29 44.11 Selecting previously unselected package libcom-err2:amd64.
+#29 44.11 Preparing to unpack .../036-libcom-err2_1.47.2-3+b12_amd64.deb ...
+#29 44.14 Unpacking libcom-err2:amd64 (1.47.2-3+b12) ...
+#29 44.32 Selecting previously unselected package libunistring5:amd64.
+#29 44.32 Preparing to unpack .../037-libunistring5_1.3-2_amd64.deb ...
+#29 44.35 Unpacking libunistring5:amd64 (1.3-2) ...
+#29 44.57 Selecting previously unselected package libidn2-0:amd64.
+#29 44.57 Preparing to unpack .../038-libidn2-0_2.3.8-2_amd64.deb ...
+#29 44.59 Unpacking libidn2-0:amd64 (2.3.8-2) ...
+#29 44.77 Selecting previously unselected package libp11-kit0:amd64.
+#29 44.77 Preparing to unpack .../039-libp11-kit0_0.25.5-3_amd64.deb ...
+#29 44.79 Unpacking libp11-kit0:amd64 (0.25.5-3) ...
+#29 44.99 Selecting previously unselected package libtasn1-6:amd64.
+#29 45.00 Preparing to unpack .../040-libtasn1-6_4.20.0-2+deb13u1_amd64.deb ...
+#29 45.39 Unpacking libtasn1-6:amd64 (4.20.0-2+deb13u1) ...
+#29 45.57 Selecting previously unselected package libgnutls30t64:amd64.
+#29 45.57 Preparing to unpack .../041-libgnutls30t64_3.8.9-3+deb13u4_amd64.deb ...
+#29 45.60 Unpacking libgnutls30t64:amd64 (3.8.9-3+deb13u4) ...
+#29 46.88 Selecting previously unselected package libkrb5support0:amd64.
+#29 46.88 Preparing to unpack .../042-libkrb5support0_1.21.3-5+deb13u1_amd64.deb ...
+#29 47.06 Unpacking libkrb5support0:amd64 (1.21.3-5+deb13u1) ...
+#29 47.23 Selecting previously unselected package libk5crypto3:amd64.
+#29 47.24 Preparing to unpack .../043-libk5crypto3_1.21.3-5+deb13u1_amd64.deb ...
+#29 47.25 Unpacking libk5crypto3:amd64 (1.21.3-5+deb13u1) ...
+#29 47.47 Selecting previously unselected package libkeyutils1:amd64.
+#29 47.47 Preparing to unpack .../044-libkeyutils1_1.6.3-6_amd64.deb ...
+#29 47.49 Unpacking libkeyutils1:amd64 (1.6.3-6) ...
+#29 47.68 Selecting previously unselected package libkrb5-3:amd64.
+#29 47.68 Preparing to unpack .../045-libkrb5-3_1.21.3-5+deb13u1_amd64.deb ...
+#29 47.71 Unpacking libkrb5-3:amd64 (1.21.3-5+deb13u1) ...
+#29 47.91 Selecting previously unselected package libgssapi-krb5-2:amd64.
+#29 47.91 Preparing to unpack .../046-libgssapi-krb5-2_1.21.3-5+deb13u1_amd64.deb ...
+#29 47.93 Unpacking libgssapi-krb5-2:amd64 (1.21.3-5+deb13u1) ...
+#29 48.10 Selecting previously unselected package libcups2t64:amd64.
+#29 48.10 Preparing to unpack .../047-libcups2t64_2.4.10-3+deb13u2_amd64.deb ...
+#29 48.12 Unpacking libcups2t64:amd64 (2.4.10-3+deb13u2) ...
+#29 48.32 Selecting previously unselected package libdatrie1:amd64.
+#29 48.32 Preparing to unpack .../048-libdatrie1_0.2.13-3+b1_amd64.deb ...
+#29 48.34 Unpacking libdatrie1:amd64 (0.2.13-3+b1) ...
+#29 48.48 Selecting previously unselected package libdrm-common.
+#29 48.48 Preparing to unpack .../049-libdrm-common_2.4.124-2_all.deb ...
+#29 48.51 Unpacking libdrm-common (2.4.124-2) ...
+#29 48.66 Selecting previously unselected package libdrm2:amd64.
+#29 48.66 Preparing to unpack .../050-libdrm2_2.4.124-2_amd64.deb ...
+#29 48.68 Unpacking libdrm2:amd64 (2.4.124-2) ...
+#29 48.84 Selecting previously unselected package libdrm-amdgpu1:amd64.
+#29 48.85 Preparing to unpack .../051-libdrm-amdgpu1_2.4.124-2_amd64.deb ...
+#29 48.87 Unpacking libdrm-amdgpu1:amd64 (2.4.124-2) ...
+#29 49.06 Selecting previously unselected package libpciaccess0:amd64.
+#29 49.07 Preparing to unpack .../052-libpciaccess0_0.17-3+b3_amd64.deb ...
+#29 49.09 Unpacking libpciaccess0:amd64 (0.17-3+b3) ...
+#29 49.27 Selecting previously unselected package libdrm-intel1:amd64.
+#29 49.27 Preparing to unpack .../053-libdrm-intel1_2.4.124-2_amd64.deb ...
+#29 49.30 Unpacking libdrm-intel1:amd64 (2.4.124-2) ...
+#29 49.47 Selecting previously unselected package libedit2:amd64.
+#29 49.47 Preparing to unpack .../054-libedit2_3.1-20250104-1_amd64.deb ...
+#29 49.49 Unpacking libedit2:amd64 (3.1-20250104-1) ...
+#29 49.68 Selecting previously unselected package libelf1t64:amd64.
+#29 49.68 Preparing to unpack .../055-libelf1t64_0.192-4_amd64.deb ...
+#29 49.71 Unpacking libelf1t64:amd64 (0.192-4) ...
+#29 49.89 Selecting previously unselected package libfontenc1:amd64.
+#29 49.90 Preparing to unpack .../056-libfontenc1_1%3a1.1.8-1+b2_amd64.deb ...
+#29 49.93 Unpacking libfontenc1:amd64 (1:1.1.8-1+b2) ...
+#29 50.34 Selecting previously unselected package libfribidi0:amd64.
+#29 50.34 Preparing to unpack .../057-libfribidi0_1.0.16-1_amd64.deb ...
+#29 50.37 Unpacking libfribidi0:amd64 (1.0.16-1) ...
+#29 50.53 Selecting previously unselected package libwayland-server0:amd64.
+#29 50.53 Preparing to unpack .../058-libwayland-server0_1.23.1-3_amd64.deb ...
+#29 50.56 Unpacking libwayland-server0:amd64 (1.23.1-3) ...
+#29 50.76 Selecting previously unselected package libxml2:amd64.
+#29 50.76 Preparing to unpack .../059-libxml2_2.12.7+dfsg+really2.9.14-2.1+deb13u3_amd64.deb ...
+#29 50.79 Unpacking libxml2:amd64 (2.12.7+dfsg+really2.9.14-2.1+deb13u3) ...
+#29 50.99 Selecting previously unselected package libz3-4:amd64.
+#29 50.99 Preparing to unpack .../060-libz3-4_4.13.3-1_amd64.deb ...
+#29 51.02 Unpacking libz3-4:amd64 (4.13.3-1) ...
+#29 51.60 Selecting previously unselected package libllvm19:amd64.
+#29 51.60 Preparing to unpack .../061-libllvm19_1%3a19.1.7-3+b1_amd64.deb ...
+#29 51.63 Unpacking libllvm19:amd64 (1:19.1.7-3+b1) ...
+#29 52.51 Selecting previously unselected package libsensors-config.
+#29 52.51 Preparing to unpack .../062-libsensors-config_1%3a3.6.2-2_all.deb ...
+#29 52.54 Unpacking libsensors-config (1:3.6.2-2) ...
+#29 52.71 Selecting previously unselected package libsensors5:amd64.
+#29 52.71 Preparing to unpack .../063-libsensors5_1%3a3.6.2-2_amd64.deb ...
+#29 52.74 Unpacking libsensors5:amd64 (1:3.6.2-2) ...
+#29 52.91 Selecting previously unselected package libx11-xcb1:amd64.
+#29 52.91 Preparing to unpack .../064-libx11-xcb1_2%3a1.8.12-1_amd64.deb ...
+#29 52.94 Unpacking libx11-xcb1:amd64 (2:1.8.12-1) ...
+#29 53.09 Selecting previously unselected package libxcb-dri3-0:amd64.
+#29 53.09 Preparing to unpack .../065-libxcb-dri3-0_1.17.0-2+b1_amd64.deb ...
+#29 53.11 Unpacking libxcb-dri3-0:amd64 (1.17.0-2+b1) ...
+#29 53.28 Selecting previously unselected package libxcb-present0:amd64.
+#29 53.28 Preparing to unpack .../066-libxcb-present0_1.17.0-2+b1_amd64.deb ...
+#29 53.31 Unpacking libxcb-present0:amd64 (1.17.0-2+b1) ...
+#29 53.48 Selecting previously unselected package libxcb-randr0:amd64.
+#29 53.48 Preparing to unpack .../067-libxcb-randr0_1.17.0-2+b1_amd64.deb ...
+#29 53.51 Unpacking libxcb-randr0:amd64 (1.17.0-2+b1) ...
+#29 53.68 Selecting previously unselected package libxcb-sync1:amd64.
+#29 53.68 Preparing to unpack .../068-libxcb-sync1_1.17.0-2+b1_amd64.deb ...
+#29 53.69 Unpacking libxcb-sync1:amd64 (1.17.0-2+b1) ...
+#29 53.86 Selecting previously unselected package libxcb-xfixes0:amd64.
+#29 53.86 Preparing to unpack .../069-libxcb-xfixes0_1.17.0-2+b1_amd64.deb ...
+#29 53.88 Unpacking libxcb-xfixes0:amd64 (1.17.0-2+b1) ...
+#29 54.06 Selecting previously unselected package libxshmfence1:amd64.
+#29 54.06 Preparing to unpack .../070-libxshmfence1_1.3.3-1_amd64.deb ...
+#29 54.08 Unpacking libxshmfence1:amd64 (1.3.3-1) ...
+#29 54.24 Selecting previously unselected package mesa-libgallium:amd64.
+#29 54.24 Preparing to unpack .../071-mesa-libgallium_25.0.7-2+deb13u1_amd64.deb ...
+#29 54.26 Unpacking mesa-libgallium:amd64 (25.0.7-2+deb13u1) ...
+#29 54.91 Selecting previously unselected package libgbm1:amd64.
+#29 54.91 Preparing to unpack .../072-libgbm1_25.0.7-2+deb13u1_amd64.deb ...
+#29 54.93 Unpacking libgbm1:amd64 (25.0.7-2+deb13u1) ...
+#29 55.16 Selecting previously unselected package libglvnd0:amd64.
+#29 55.16 Preparing to unpack .../073-libglvnd0_1.7.0-1+b2_amd64.deb ...
+#29 55.18 Unpacking libglvnd0:amd64 (1.7.0-1+b2) ...
+#29 55.35 Selecting previously unselected package libxcb-glx0:amd64.
+#29 55.36 Preparing to unpack .../074-libxcb-glx0_1.17.0-2+b1_amd64.deb ...
+#29 55.38 Unpacking libxcb-glx0:amd64 (1.17.0-2+b1) ...
+#29 55.54 Selecting previously unselected package libxxf86vm1:amd64.
+#29 55.54 Preparing to unpack .../075-libxxf86vm1_1%3a1.1.4-1+b4_amd64.deb ...
+#29 55.56 Unpacking libxxf86vm1:amd64 (1:1.1.4-1+b4) ...
+#29 55.75 Selecting previously unselected package libvulkan1:amd64.
+#29 55.75 Preparing to unpack .../076-libvulkan1_1.4.309.0-1_amd64.deb ...
+#29 55.77 Unpacking libvulkan1:amd64 (1.4.309.0-1) ...
+#29 55.96 Selecting previously unselected package libgl1-mesa-dri:amd64.
+#29 55.96 Preparing to unpack .../077-libgl1-mesa-dri_25.0.7-2+deb13u1_amd64.deb ...
+#29 55.99 Unpacking libgl1-mesa-dri:amd64 (25.0.7-2+deb13u1) ...
+#29 56.17 Selecting previously unselected package libglx-mesa0:amd64.
+#29 56.17 Preparing to unpack .../078-libglx-mesa0_25.0.7-2+deb13u1_amd64.deb ...
+#29 56.19 Unpacking libglx-mesa0:amd64 (25.0.7-2+deb13u1) ...
+#29 56.36 Selecting previously unselected package libglx0:amd64.
+#29 56.36 Preparing to unpack .../079-libglx0_1.7.0-1+b2_amd64.deb ...
+#29 56.38 Unpacking libglx0:amd64 (1.7.0-1+b2) ...
+#29 56.55 Selecting previously unselected package libgl1:amd64.
+#29 56.55 Preparing to unpack .../080-libgl1_1.7.0-1+b2_amd64.deb ...
+#29 56.58 Unpacking libgl1:amd64 (1.7.0-1+b2) ...
+#29 56.76 Selecting previously unselected package libgraphite2-3:amd64.
+#29 56.76 Preparing to unpack .../081-libgraphite2-3_1.3.14-2+deb13u1_amd64.deb ...
+#29 56.79 Unpacking libgraphite2-3:amd64 (1.3.14-2+deb13u1) ...
+#29 56.98 Selecting previously unselected package libharfbuzz0b:amd64.
+#29 56.98 Preparing to unpack .../082-libharfbuzz0b_10.2.0-1+deb13u1_amd64.deb ...
+#29 57.01 Unpacking libharfbuzz0b:amd64 (10.2.0-1+deb13u1) ...
+#29 57.21 Selecting previously unselected package x11-common.
+#29 57.21 Preparing to unpack .../083-x11-common_1%3a7.7+24+deb13u1_all.deb ...
+#29 57.30 Unpacking x11-common (1:7.7+24+deb13u1) ...
+#29 57.46 Selecting previously unselected package libice6:amd64.
+#29 57.46 Preparing to unpack .../084-libice6_2%3a1.1.1-1_amd64.deb ...
+#29 57.48 Unpacking libice6:amd64 (2:1.1.1-1) ...
+#29 57.64 Selecting previously unselected package libnspr4:amd64.
+#29 57.64 Preparing to unpack .../085-libnspr4_2%3a4.36-1_amd64.deb ...
+#29 57.66 Unpacking libnspr4:amd64 (2:4.36-1) ...
+#29 57.85 Selecting previously unselected package libnss3:amd64.
+#29 57.85 Preparing to unpack .../086-libnss3_2%3a3.110-1+deb13u5_amd64.deb ...
+#29 57.87 Unpacking libnss3:amd64 (2:3.110-1+deb13u5) ...
+#29 58.12 Selecting previously unselected package libthai-data.
+#29 58.12 Preparing to unpack .../087-libthai-data_0.1.29-2_all.deb ...
+#29 58.15 Unpacking libthai-data (0.1.29-2) ...
+#29 58.32 Selecting previously unselected package libthai0:amd64.
+#29 58.32 Preparing to unpack .../088-libthai0_0.1.29-2+b1_amd64.deb ...
+#29 58.34 Unpacking libthai0:amd64 (0.1.29-2+b1) ...
+#29 58.53 Selecting previously unselected package libpango-1.0-0:amd64.
+#29 58.53 Preparing to unpack .../089-libpango-1.0-0_1.56.3-1_amd64.deb ...
+#29 58.56 Unpacking libpango-1.0-0:amd64 (1.56.3-1) ...
+#29 58.73 Selecting previously unselected package libsm6:amd64.
+#29 58.73 Preparing to unpack .../090-libsm6_2%3a1.2.6-1_amd64.deb ...
+#29 58.75 Unpacking libsm6:amd64 (2:1.2.6-1) ...
+#29 58.92 Selecting previously unselected package libunwind8:amd64.
+#29 58.92 Preparing to unpack .../091-libunwind8_1.8.1-0.1_amd64.deb ...
+#29 58.94 Unpacking libunwind8:amd64 (1.8.1-0.1) ...
+#29 59.17 Selecting previously unselected package libxt6t64:amd64.
+#29 59.17 Preparing to unpack .../092-libxt6t64_1%3a1.2.1-1.2+b2_amd64.deb ...
+#29 59.21 Unpacking libxt6t64:amd64 (1:1.2.1-1.2+b2) ...
+#29 59.39 Selecting previously unselected package libxmu6:amd64.
+#29 59.39 Preparing to unpack .../093-libxmu6_2%3a1.1.3-3+b4_amd64.deb ...
+#29 59.42 Unpacking libxmu6:amd64 (2:1.1.3-3+b4) ...
+#29 59.56 Selecting previously unselected package libxpm4:amd64.
+#29 59.56 Preparing to unpack .../094-libxpm4_1%3a3.5.17-1+deb13u1_amd64.deb ...
+#29 59.59 Unpacking libxpm4:amd64 (1:3.5.17-1+deb13u1) ...
+#29 59.75 Selecting previously unselected package libxaw7:amd64.
+#29 59.75 Preparing to unpack .../095-libxaw7_2%3a1.0.16-1_amd64.deb ...
+#29 59.78 Unpacking libxaw7:amd64 (2:1.0.16-1) ...
+#29 59.93 Selecting previously unselected package libxcomposite1:amd64.
+#29 59.93 Preparing to unpack .../096-libxcomposite1_1%3a0.4.6-1_amd64.deb ...
+#29 59.96 Unpacking libxcomposite1:amd64 (1:0.4.6-1) ...
+#29 60.17 Selecting previously unselected package libxdamage1:amd64.
+#29 60.17 Preparing to unpack .../097-libxdamage1_1%3a1.1.6-1+b2_amd64.deb ...
+#29 60.20 Unpacking libxdamage1:amd64 (1:1.1.6-1+b2) ...
+#29 60.38 Selecting previously unselected package libxfixes3:amd64.
+#29 60.38 Preparing to unpack .../098-libxfixes3_1%3a6.0.0-2+b4_amd64.deb ...
+#29 60.59 Unpacking libxfixes3:amd64 (1:6.0.0-2+b4) ...
+#29 60.77 Selecting previously unselected package libxfont2:amd64.
+#29 60.77 Preparing to unpack .../099-libxfont2_1%3a2.0.6-1+deb13u1_amd64.deb ...
+#29 60.79 Unpacking libxfont2:amd64 (1:2.0.6-1+deb13u1) ...
+#29 60.95 Selecting previously unselected package xkb-data.
+#29 60.95 Preparing to unpack .../100-xkb-data_2.42-1_all.deb ...
+#29 60.98 Unpacking xkb-data (2.42-1) ...
+#29 61.23 Selecting previously unselected package libxkbcommon0:amd64.
+#29 61.23 Preparing to unpack .../101-libxkbcommon0_1.7.0-2_amd64.deb ...
+#29 61.26 Unpacking libxkbcommon0:amd64 (1.7.0-2) ...
+#29 61.41 Selecting previously unselected package libxkbfile1:amd64.
+#29 61.41 Preparing to unpack .../102-libxkbfile1_1%3a1.1.0-1+b4_amd64.deb ...
+#29 61.43 Unpacking libxkbfile1:amd64 (1:1.1.0-1+b4) ...
+#29 61.59 Selecting previously unselected package libxrandr2:amd64.
+#29 61.59 Preparing to unpack .../103-libxrandr2_2%3a1.5.4-1+b3_amd64.deb ...
+#29 61.61 Unpacking libxrandr2:amd64 (2:1.5.4-1+b3) ...
+#29 61.74 Selecting previously unselected package x11-xkb-utils.
+#29 61.75 Preparing to unpack .../104-x11-xkb-utils_7.7+9_amd64.deb ...
+#29 61.77 Unpacking x11-xkb-utils (7.7+9) ...
+#29 61.94 Selecting previously unselected package xfonts-encodings.
+#29 61.94 Preparing to unpack .../105-xfonts-encodings_1%3a1.0.4-2.2_all.deb ...
+#29 61.97 Unpacking xfonts-encodings (1:1.0.4-2.2) ...
+#29 62.15 Selecting previously unselected package xfonts-utils.
+#29 62.15 Preparing to unpack .../106-xfonts-utils_1%3a7.7+7_amd64.deb ...
+#29 62.17 Unpacking xfonts-utils (1:7.7+7) ...
+#29 62.36 Selecting previously unselected package xfonts-scalable.
+#29 62.36 Preparing to unpack .../107-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+#29 62.38 Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+#29 62.54 Selecting previously unselected package xserver-common.
+#29 62.54 Preparing to unpack .../108-xserver-common_2%3a21.1.16-1.3+deb13u4_all.deb ...
+#29 62.56 Unpacking xserver-common (2:21.1.16-1.3+deb13u4) ...
+#29 62.77 Selecting previously unselected package xvfb.
+#29 62.77 Preparing to unpack .../109-xvfb_2%3a21.1.16-1.3+deb13u4_amd64.deb ...
+#29 62.79 Unpacking xvfb (2:21.1.16-1.3+deb13u4) ...
+#29 63.01 Setting up libexpat1:amd64 (2.9.0-1~deb13u1) ...
+#29 63.13 Setting up libgraphite2-3:amd64 (1.3.14-2+deb13u1) ...
+#29 63.22 Setting up libpixman-1-0:amd64 (0.44.0-3) ...
+#29 63.31 Setting up libwayland-server0:amd64 (1.23.1-3) ...
+#29 63.39 Setting up libpciaccess0:amd64 (0.17-3+b3) ...
+#29 63.46 Setting up libxau6:amd64 (1:1.0.11-1) ...
+#29 63.52 Setting up libxdmcp6:amd64 (1:1.1.5-1) ...
+#29 63.60 Setting up libkeyutils1:amd64 (1.6.3-6) ...
+#29 63.67 Setting up libxcb1:amd64 (1.17.0-2+b1) ...
+#29 63.74 Setting up libxcb-xfixes0:amd64 (1.17.0-2+b1) ...
+#29 63.81 Setting up libdatrie1:amd64 (0.2.13-3+b1) ...
+#29 63.88 Setting up fonts-noto-color-emoji (2.051-0+deb13u1) ...
+#29 63.96 Setting up libxcb-render0:amd64 (1.17.0-2+b1) ...
+#29 64.03 Setting up libglvnd0:amd64 (1.7.0-1+b2) ...
+#29 64.12 Setting up libxcb-glx0:amd64 (1.17.0-2+b1) ...
+#29 64.22 Setting up libbrotli1:amd64 (1.1.0-2+deb13u1) ...
+#29 64.30 Setting up libedit2:amd64 (3.1-20250104-1) ...
+#29 64.36 Setting up x11-common (1:7.7+24+deb13u1) ...
+#29 64.81 debconf: unable to initialize frontend: Dialog
+#29 64.81 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#29 64.81 debconf: falling back to frontend: Readline
+#29 64.81 debconf: unable to initialize frontend: Readline
+#29 64.81 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8.)
+#29 64.81 debconf: falling back to frontend: Teletype
+#29 64.82 debconf: unable to initialize frontend: Teletype
+#29 64.82 debconf: (This frontend requires a controlling tty.)
+#29 64.82 debconf: falling back to frontend: Noninteractive
+#29 64.85 invoke-rc.d: could not determine current runlevel
+#29 64.85 invoke-rc.d: policy-rc.d denied execution of start.
+#29 64.90 Setting up libsensors-config (1:3.6.2-2) ...
+#29 65.04 Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+#29 65.23 Setting up xkb-data (2.42-1) ...
+#29 65.30 Setting up libxcb-shm0:amd64 (1.17.0-2+b1) ...
+#29 65.39 Setting up libcom-err2:amd64 (1.47.2-3+b12) ...
+#29 65.48 Setting up libunwind8:amd64 (1.8.1-0.1) ...
+#29 65.55 Setting up libelf1t64:amd64 (0.192-4) ...
+#29 65.62 Setting up libkrb5support0:amd64 (1.21.3-5+deb13u1) ...
+#29 65.70 Setting up libxcb-present0:amd64 (1.17.0-2+b1) ...
+#29 65.77 Setting up libasound2-data (1.2.14-1+deb13u1) ...
+#29 65.86 Setting up libfontenc1:amd64 (1:1.1.8-1+b2) ...
+#29 65.93 Setting up libz3-4:amd64 (4.13.3-1) ...
+#29 66.00 Setting up libasound2t64:amd64 (1.2.14-1+deb13u1) ...
+#29 66.06 Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+#29 66.13 Setting up libx11-data (2:1.8.12-1) ...
+#29 66.21 Setting up libnspr4:amd64 (2:4.36-1) ...
+#29 66.28 Setting up libxcb-sync1:amd64 (1.17.0-2+b1) ...
+#29 66.36 Setting up libavahi-common-data:amd64 (0.8-16) ...
+#29 66.45 Setting up libdbus-1-3:amd64 (1.16.2-2) ...
+#29 66.53 Setting up xfonts-encodings (1:1.0.4-2.2) ...
+#29 66.61 Setting up libfribidi0:amd64 (1.0.16-1) ...
+#29 66.68 Setting up libp11-kit0:amd64 (0.25.5-3) ...
+#29 66.75 Setting up libunistring5:amd64 (1.3-2) ...
+#29 66.82 Setting up libpng16-16t64:amd64 (1.6.48-1+deb13u6) ...
+#29 66.89 Setting up libsensors5:amd64 (1:3.6.2-2) ...
+#29 66.95 Setting up libk5crypto3:amd64 (1.21.3-5+deb13u1) ...
+#29 67.04 Setting up libvulkan1:amd64 (1.4.309.0-1) ...
+#29 67.10 Setting up fonts-ipafont-gothic (00303-23) ...
+#29 67.16 update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+#29 67.20 Setting up libxshmfence1:amd64 (1.3.3-1) ...
+#29 67.28 Setting up at-spi2-common (2.56.2-1+deb13u2) ...
+#29 67.35 Setting up libxcb-randr0:amd64 (1.17.0-2+b1) ...
+#29 67.43 Setting up fonts-liberation (1:2.1.5-3) ...
+#29 67.50 Setting up libtasn1-6:amd64 (4.20.0-2+deb13u1) ...
+#29 67.58 Setting up libx11-6:amd64 (2:1.8.12-1) ...
+#29 67.67 Setting up libthai-data (0.1.29-2) ...
+#29 67.74 Setting up libkrb5-3:amd64 (1.21.3-5+deb13u1) ...
+#29 67.87 Setting up libxkbfile1:amd64 (1:1.1.0-1+b4) ...
+#29 68.02 Setting up libdrm-common (2.4.124-2) ...
+#29 68.16 Setting up libxcomposite1:amd64 (1:0.4.6-1) ...
+#29 68.27 Setting up libxml2:amd64 (2.12.7+dfsg+really2.9.14-2.1+deb13u3) ...
+#29 68.35 Setting up fonts-unifont (1:15.1.01-1) ...
+#29 68.45 Setting up libxkbcommon0:amd64 (1.7.0-2) ...
+#29 68.57 Setting up libxcb-dri3-0:amd64 (1.17.0-2+b1) ...
+#29 68.68 Setting up libllvm19:amd64 (1:19.1.7-3+b1) ...
+#29 68.78 Setting up libx11-xcb1:amd64 (2:1.8.12-1) ...
+#29 68.90 Setting up libice6:amd64 (2:1.1.1-1) ...
+#29 69.02 Setting up libxdamage1:amd64 (1:1.1.6-1+b2) ...
+#29 69.14 Setting up libatk1.0-0t64:amd64 (2.56.2-1+deb13u2) ...
+#29 69.25 Setting up libxpm4:amd64 (1:3.5.17-1+deb13u1) ...
+#29 69.35 Setting up libxrender1:amd64 (1:0.9.12-1) ...
+#29 69.45 Setting up fontconfig-config (2.15.0-2.3) ...
+#29 69.68 debconf: unable to initialize frontend: Dialog
+#29 69.68 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#29 69.68 debconf: falling back to frontend: Readline
+#29 69.68 debconf: unable to initialize frontend: Readline
+#29 69.68 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8.)
+#29 69.68 debconf: falling back to frontend: Teletype
+#29 69.68 debconf: unable to initialize frontend: Teletype
+#29 69.68 debconf: (This frontend requires a controlling tty.)
+#29 69.68 debconf: falling back to frontend: Noninteractive
+#29 69.85 Setting up libavahi-common3:amd64 (0.8-16) ...
+#29 69.96 Setting up libxext6:amd64 (2:1.3.4-1+b3) ...
+#29 70.14 Setting up libidn2-0:amd64 (2.3.8-2) ...
+#29 70.26 Setting up libnss3:amd64 (2:3.110-1+deb13u5) ...
+#29 70.36 Setting up libxxf86vm1:amd64 (1:1.1.4-1+b4) ...
+#29 70.45 Setting up libthai0:amd64 (0.1.29-2+b1) ...
+#29 70.55 Setting up libfreetype6:amd64 (2.13.3+dfsg-1+deb13u1) ...
+#29 70.65 Setting up libxfixes3:amd64 (1:6.0.0-2+b4) ...
+#29 70.77 Setting up libgssapi-krb5-2:amd64 (1.21.3-5+deb13u1) ...
+#29 70.94 Setting up libxrandr2:amd64 (2:1.5.4-1+b3) ...
+#29 71.03 Setting up libdrm2:amd64 (2.4.124-2) ...
+#29 71.14 Setting up libharfbuzz0b:amd64 (10.2.0-1+deb13u1) ...
+#29 71.26 Setting up libfontconfig1:amd64 (2.15.0-2.3) ...
+#29 71.39 Setting up libsm6:amd64 (2:1.2.6-1) ...
+#29 71.50 Setting up libxfont2:amd64 (1:2.0.6-1+deb13u1) ...
+#29 71.62 Setting up libavahi-client3:amd64 (0.8-16) ...
+#29 71.73 Setting up libdrm-amdgpu1:amd64 (2.4.124-2) ...
+#29 71.83 Setting up libgnutls30t64:amd64 (3.8.9-3+deb13u4) ...
+#29 71.93 Setting up fontconfig (2.15.0-2.3) ...
+#29 72.01 Regenerating fonts cache... done.
+#29 74.17 Setting up libxi6:amd64 (2:1.8.2-1) ...
+#29 74.29 Setting up libpango-1.0-0:amd64 (1.56.3-1) ...
+#29 74.39 Setting up libdrm-intel1:amd64 (2.4.124-2) ...
+#29 74.50 Setting up fonts-wqy-zenhei (0.9.45-8) ...
+#29 74.71 Setting up xfonts-utils (1:7.7+7) ...
+#29 74.80 Setting up libcairo2:amd64 (1.18.4-1+b1) ...
+#29 74.91 Setting up libatspi2.0-0t64:amd64 (2.56.2-1+deb13u2) ...
+#29 75.00 Setting up libxt6t64:amd64 (1:1.2.1-1.2+b2) ...
+#29 75.19 Setting up libcups2t64:amd64 (2.4.10-3+deb13u2) ...
+#29 75.30 Setting up xfonts-scalable (1:1.0.3-1.3) ...
+#29 75.63 Setting up libatk-bridge2.0-0t64:amd64 (2.56.2-1+deb13u2) ...
+#29 75.82 Setting up mesa-libgallium:amd64 (25.0.7-2+deb13u1) ...
+#29 75.93 Setting up libxmu6:amd64 (2:1.1.3-3+b4) ...
+#29 81.51 Setting up libgbm1:amd64 (25.0.7-2+deb13u1) ...
+#29 84.66 Setting up libgl1-mesa-dri:amd64 (25.0.7-2+deb13u1) ...
+#29 86.88 Setting up libxaw7:amd64 (2:1.0.16-1) ...
+#29 87.60 Setting up libglx-mesa0:amd64 (25.0.7-2+deb13u1) ...
+#29 87.69 Setting up libglx0:amd64 (1.7.0-1+b2) ...
+#29 87.80 Setting up x11-xkb-utils (7.7+9) ...
+#29 87.92 Setting up libgl1:amd64 (1.7.0-1+b2) ...
+#29 88.04 Setting up xserver-common (2:21.1.16-1.3+deb13u4) ...
+#29 88.13 Setting up xvfb (2:21.1.16-1.3+deb13u4) ...
+#29 88.26 Processing triggers for libc-bin (2.41-12+deb13u4) ...
+#29 88.65 Downloading Chrome for Testing 151.0.7922.34 (playwright chromium v1234) from https://cdn.playwright.dev/builds/cft/151.0.7922.34/linux64/chrome-linux64.zip
+#29 90.25 |                                                                                |   0% of 184.3 MiB
+#29 93.18 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                        |  10% of 184.3 MiB
+#29 95.24 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                |  20% of 184.3 MiB
+#29 97.25 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                        |  30% of 184.3 MiB
+#29 99.43 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                |  40% of 184.3 MiB
+#29 101.8 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                        |  50% of 184.3 MiB
+#29 103.9 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                |  60% of 184.3 MiB
+#29 105.9 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                        |  70% of 184.3 MiB
+#29 108.0 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                |  80% of 184.3 MiB
+#29 110.3 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá        |  90% of 184.3 MiB
+#29 112.4 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá| 100% of 184.3 MiB
+#29 117.8 Chrome for Testing 151.0.7922.34 (playwright chromium v1234) downloaded to /home/node/.cache/ms-playwright/chromium-1234
+#29 117.8 Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+#29 119.3 |                                                                                |   0% of 2.3 MiB
+#29 119.5 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                        |  10% of 2.3 MiB
+#29 119.6 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                |  20% of 2.3 MiB
+#29 119.7 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                        |  30% of 2.3 MiB
+#29 119.7 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                |  40% of 2.3 MiB
+#29 119.8 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                        |  50% of 2.3 MiB
+#29 119.8 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                |  60% of 2.3 MiB
+#29 119.8 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                        |  70% of 2.3 MiB
+#29 119.9 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                |  80% of 2.3 MiB
+#29 119.9 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá        |  90% of 2.3 MiB
+#29 119.9 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá| 100% of 2.3 MiB
+#29 120.0 FFmpeg (playwright ffmpeg v1011) downloaded to /home/node/.cache/ms-playwright/ffmpeg-1011
+#29 120.0 Downloading Chrome Headless Shell 151.0.7922.34 (playwright chromium-headless-shell v1234) from https://cdn.playwright.dev/builds/cft/151.0.7922.34/linux64/chrome-headless-shell-linux64.zip
+#29 122.4 |                                                                                |   0% of 114.7 MiB
+#29 124.1 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                        |  10% of 114.7 MiB
+#29 125.4 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                                |  20% of 114.7 MiB
+#29 126.7 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                        |  30% of 114.7 MiB
+#29 128.0 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                                |  40% of 114.7 MiB
+#29 129.2 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                        |  50% of 114.7 MiB
+#29 130.4 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                                |  60% of 114.7 MiB
+#29 131.6 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                        |  70% of 114.7 MiB
+#29 133.1 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá                |  80% of 114.7 MiB
+#29 134.4 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá        |  90% of 114.7 MiB
+#29 135.8 |ΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûáΓûá| 100% of 114.7 MiB
+#29 170.5 Chrome Headless Shell 151.0.7922.34 (playwright chromium-headless-shell v1234) downloaded to /home/node/.cache/ms-playwright/chromium_headless_shell-1234
+#29 170.5 Reading package lists...
+#29 171.2 Building dependency tree...
+#29 171.3 Reading state information...
+#29 171.6 xvfb is already the newest version (2:21.1.16-1.3+deb13u4).
+#29 171.6 0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+#29 DONE 182.2s
+
+#30 exporting to image
+#30 exporting layers
+#30 exporting layers 124.0s done
+#30 exporting manifest sha256:9ce6666db88569dce0ada7f336e4f513050fe16decc102403df613d54fd71aa4 0.1s done
+#30 exporting config sha256:336b0657537be5a0200f5a7f731874f277a7f131988a43023f3944cfa72e1d88
+#30 exporting config sha256:336b0657537be5a0200f5a7f731874f277a7f131988a43023f3944cfa72e1d88 0.1s done
+#30 exporting attestation manifest sha256:72bc5fe3d7faa8290b24b88bfde2f0b3f8b39178c7bc196e6da0f263643f4867
+#30 exporting attestation manifest sha256:72bc5fe3d7faa8290b24b88bfde2f0b3f8b39178c7bc196e6da0f263643f4867 0.2s done
+#30 exporting manifest list sha256:6715b73447821ec809e107f2b7913ce4d02d1b898b25c37c3b4b2509e424cca4
+#30 exporting manifest list sha256:6715b73447821ec809e107f2b7913ce4d02d1b898b25c37c3b4b2509e424cca4 0.1s done
+#30 naming to docker.io/library/omniroute:orr-20131
+#30 naming to docker.io/library/omniroute:orr-20131 0.0s done
+#30 unpacking to docker.io/library/omniroute:orr-20131
+#30 unpacking to docker.io/library/omniroute:orr-20131 82.2s done
+#30 DONE 211.0s
+
+ 1 warning found (use docker --debug to expand):
+ - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV "REQUIRE_API_KEY") (line 287)
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/k0gcssp3nb596drf4q9g7oo20

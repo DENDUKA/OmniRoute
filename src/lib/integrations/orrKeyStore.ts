@@ -2,7 +2,6 @@ import { opaqueTokenFingerprint } from "@omniroute/open-sse/utils/opaqueTokenFin
 
 import { getDbInstance } from "@/lib/db/core";
 import { ApiKeyImportConflictError, importApiKey } from "@/lib/db/apiKeyImport";
-import { getMachineId } from "@/shared/utils/machine";
 
 import { ORR_MACHINE_ID } from "./orrContracts";
 
@@ -32,9 +31,12 @@ export function adoptApiKey(rawKey: string): boolean {
  * reports it as missing instead of claiming a success that would leave ORR
  * believing the node serves traffic for that key.
  */
-export async function importOrAdoptOrrKey(name: string, key: string): Promise<string | null> {
+export function importOrAdoptOrrKey(name: string, key: string): string | null {
   try {
-    const { id } = importApiKey({ name, key }, await getMachineId());
+    // machine_id IS the ownership marker here: mapIntegrationKey reports
+    // "service" only for this value, and only "service" rows are ever deleted
+    // by a bulk sync. The host machine id would mark the key operator-owned.
+    const { id } = importApiKey({ name, key }, ORR_MACHINE_ID);
     return id;
   } catch (error) {
     if (error instanceof ApiKeyImportConflictError) {

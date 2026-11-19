@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     return Response.json({ created: true, id: key });
   }
 
-  const created = await importOrAdoptOrrKey(name.trim(), key);
+  const created = importOrAdoptOrrKey(name.trim(), key);
   if (!created) {
     return createErrorResponse({ status: 409, message: "Key could not be imported" });
   }

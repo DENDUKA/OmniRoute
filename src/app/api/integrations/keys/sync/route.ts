@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     const current = row ? mapIntegrationKey(row) : null;
 
     if (!row || !current) {
-      if (await importOrAdoptOrrKey(entry.name, key)) addedCount += 1;
+      if (importOrAdoptOrrKey(entry.name, key)) addedCount += 1;
       continue;
     }
 
